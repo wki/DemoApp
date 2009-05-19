@@ -1,0 +1,36 @@
+---
+action: /login
+indicator: Login
+auto_fieldset: 0
+#output_processors:
+#  - Indent
+
+# class 'error' instead of eg. 'error_constraint_required'...
+# auto_error_class: error
+
+elements:
+  - type: Text
+    name: username
+    label: Login
+    constraints:
+      - Required
+    attributes:
+      class: _focus
+    filters:
+      - TrimEdges
+  
+  - type: Password
+    name: password
+    label: Password
+    constraints:
+      - Required
+    filters:
+      - TrimEdges
+  
+  - type: Submit
+    name: Login
+    label: ' '
+    value: Login
+
+constraints:
+  - SingleValue

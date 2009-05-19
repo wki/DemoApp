@@ -1,0 +1,86 @@
+/* top navigation definitions */
+ul#topnav {
+  height: 30px;
+  margin: 0px;
+  padding: 0px;
+  padding-left: 13px;
+  overflow-x: visible;
+  overflow-y: hidden;
+}
+
+ul#topnav li {
+float: left;
+position: relative;
+width: 130px; /* width may be omitted allowing variable tabs */
+height: 30px;
+margin: 0px 0px 0px -13px;
+padding: 0px;
+list-style: none;
+}
+
+ul#topnav li a,
+ul#topnav li a:after {
+display: block;
+background-color: #cccccc;
+background: -webkit-gradient(linear, left top, left bottom, from(#bbbbbb), to(#aaaaaa), color-stop(0.1, #ffffff), color-stop(0.28, #aaaaaa), color-stop(0.6, #000000));
+border: 1px solid #aaaaaa;
+}
+
+ul#topnav li a {
+position: relative;
+top: 10px;
+height: 50px;
+margin-right: 10px;
+padding: 2px 10px;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+font-family: Helvetica, sans-serif;
+font-weight: bold;
+font-size: 12px;
+text-align: center;
+text-decoration: none;
+color: #444444;
+}
+
+ul#topnav li a:after { /* fails in firefox -- can we get rid of it ? */
+content: "";
+position: absolute;
+top: -1px;
+right: -1px;
+width: 10px;
+height: 54px; /* compensate top+bottom padding of li a */
+-webkit-border-top-right-radius: 10px;
+-webkit-box-shadow: 2px 4px 4px rgba(0,0,0,0.7);
+z-index: 100;
+clip: rect(0px 20px 54px 3px);
+}
+
+ul#topnav li a:hover:after,
+ul#topnav li a:hover {
+background: -webkit-gradient(linear, left top, left bottom, from(#bbbbbb), to(#aaaaaa), color-stop(0.1, #ffffff), color-stop(0.28, #aaaaaa), color-stop(0.36, #aaaaaa), color-stop(0.63, #000000));
+}
+
+ul#topnav li a:active {
+  opacity: 0.8;
+  z-index: 300;
+}
+
+ul#topnav li a:hover {
+  top:5px;
+}
+
+
+ul#topnav li.active a:hover,
+ul#topnav li.active a {
+top: 5px;
+background-color: #dddddd;
+-webkit-box-shadow: 0px 4px 8px rgba(0,0,0,1.0);
+background: -webkit-gradient(linear, left top, left bottom, from(#cccccc), to(#dddddd), color-stop(0.15, #ffffff), color-stop(0.3, #dddddd));
+color: black;
+z-index: 200;
+}
+
+ul#topnav li.active a:hover:after,
+ul#topnav li.active a:after {
+  display: none;
+}

@@ -1,0 +1,117 @@
+---
+#action: /products/edit
+indicator: Save
+auto_fieldset: 0
+auto_constraint_class: constraint_%t
+attributes:
+  class: _enhance
+
+elements:
+  - type: Hidden
+    name: product_id
+    
+  - type: Blank
+
+  - type: Text
+    name: product_nr
+    label: Nr
+    constraints: 
+      - Required
+      - type: Regex
+        regex: '^[A-Z0-9]{4,8}$'
+        message: only A-Z, 0-9 allowed
+    filters:
+      - TrimEdges
+        
+  - type: Text
+    name: product_name
+    label: Name
+    constraints: 
+      - Required
+    filters:
+      - TrimEdges
+
+  - type: Text
+    name: price
+    label: Price
+    constraints: 
+      - Required
+      - Number
+    filters:
+      - TrimEdges
+  
+  # HAS-ONE relation
+  - type: Select
+    name: color_id
+    label: Color
+    empty_first: 1
+    empty_first_label: '- none -'
+    model_config:
+      resultset: Color
+      label_column: color_name
+      attributes:
+        order_by: color_name
+
+  # HAS-MANY relation
+  - type: Fieldset
+    legend: Sizes
+    elements:        
+      - type: Repeatable
+        nested_name: sizes
+        counter_name: size_count
+        attributes:
+          class: repeatable_fields _repeat_size_count
+        model_config:
+          empty_rows: 1
+          new_rows_max: 10
+          
+        elements:
+          - type: Hidden
+            name: size_id
+      
+          # GOTCHA! a Block inhibits 'new_empty_row' from working!!!
+          # - type: Block
+          #   elements:
+      
+              # - type: Src
+              #   content_xml: '<label>Size</label>'
+                
+          - type: Text
+            name: size_name
+            size: 25
+            label: Size
+            constraints:
+              - type: MinLength
+                min: 2
+            
+          - type: Text
+            name: size_code
+            size: 10
+            label: Code
+            constraints:
+              - type: MinLength
+                min: 2
+          
+          #   
+          # # GOTCHA! should not be named 'delete' !!!
+          - type: Checkbox
+            name: del
+            container_attributes:
+              #style: 'display: none'
+              class: delete_checkbox
+            value: 1
+            # label: (delete)
+            # does not work inside Multi...
+            model_config:
+              delete_if_true: del
+
+  - type: Hidden
+    name: size_count
+
+  - type: Submit
+    name: Save
+    label: ' '
+    value: Save
+
+constraints:
+  - SingleValue

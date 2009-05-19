@@ -1,0 +1,699 @@
+Catalyst - Docs
+---------------
+
+strange save problem, see:
+http://www.gossamer-threads.com/lists/catalyst/users/23752
+
+
+Form Examples
+sub foo : Local : FormConfig {
+    my ( $self, $c ) = @_;
+
+    my $form = $c->stash->{form};
+
+    if ( $form->submitted_and_valid ) {
+        # which project did the user select?
+        my $project_id = $form->param_value('project');
+
+        # retrieve the Project row
+        my $project = $c->model('Foo')->resultset('Projects')->find($project_id );
+
+        # this will remove all related directories from the many-to-many,
+        # and then associate all selected directories
+        $form->model->update( $project );
+
+        $c->response->redirect('/done');
+    }
+    elsif ( !$form->submitted ) {
+        $form->model->default_values;
+    }
+}
+
+
+sub edit :Local :FormConfig('invoices/edit_invoice.yml') {
+   my ($self, $c, $ivc_id) = @_;
+
+   my $form = $c->stash->{form};
+   my $invoice = ($ivc_id) ? $c->model('DB::Invoices')->find($ivc_id)
+                           : $c->model('DB::Invoices')->new_result({});
+
+   if ($c->request->param('cancel')) {
+     $c->response->redirect($c->uri_for("/invoices"));
+     $c->detach();
+   }
+
+   if ($form->submitted_and_valid()) {
+     $form->model->update($invoice);
+     $c->response->redirect($c->uri_for("/invoices"));
+     $c->detach();
+   } else {
+     $form->model->default_values($invoice);
+   }
+
+   $c->stash->{ivc_id} = $ivc_id;
+   $c->stash->{template} = 'invoices/invoice_edit.tt';
+   $c->stash->{stylesheet} = 'invoices/invoice_edit.css';
+}
+
+> ? ?elements:
+> ? ? ? ? ?- type: Repeatable
+> ? ? ? ? ? ?nested_name: branchen
+             counter_name: id # must match hidden field name below
+> ? ? ? ? ? ?elements:
+                - type: Hidden
+                  name: id # must match PK
+> ? ? ? ? ? ? ? - type: Checkboxgroup
+> ? ? ? ? ? ? ? ? label: 'Branche*'
+> ? ? ? ? ? ? ? ? name: branche
+> ? ? ? ? ? ? ? ? model_config:
+> ? ? ? ? ? ? ? ? ? model: Frontwave
+> ? ? ? ? ? ? ? ? ? resultset: Branche
+> ? ? ? ? ? ? ? ? ? id_column: id
+> ? ? ? ? ? ? ? ? ? label_column: name
+> ? ? ? ? ? ? ? ? ? attributes:
+> ? ? ? ? ? ? ? ? ? ? ? ?order_by: 'id asc'
+
+
+
+Odds and Ends - compared with RoR
+---------------------------------
+
+  Perl/Catalyst                    Ruby/Rails
+  -------------------------------------------------------------------
+  + full Unicode Support           - no Unicode awareness
+  o url-routing implicit           o separate route.rp module
+    :Attribute->url handling         default + custom rules
+    controller-chain:                controller:
+      * auto, method, end called      * only action is called
+  + Model = one Database           - Model = one Table
+  + multiple databases             - single database
+  + full DB feature support        - only trivial DB operations
+                                   - no DB-level integrity (done in model)
+  o View = renderer Class          o View = template file
+  - Template::Toolkit sucks        - erb sucks
+  o C::V::ByCode good              o HAML is OK
+  o authentication (Plugin)        o authentication (Plugin)
+  + Role/ACL based auth simple     - Role/ACL based auth complicated
+  o auth-check: auto-Method        o auth-check: before_filter
+  - uri_for() method not flexible  - url_for() method not flexible
+  o Ajax possible                  + Ajax out of the box
+  + config: global, package, shell o config ????
+
+
+$foo Artikel - Erfahrungen
+--------------------------
+
+  Vorgeschmack: Catalyst ist kompliziert, alle stehen auf RoR
+   - aber: große Sites setzen es ein
+   - aber: Catalyst Leute sagen: RoR ist ein Spielzeug
+  Erste Berührung: installation war ein Klacks, aber
+   - Attribute versteh ich nicht
+   - Plugin verhält sich nicht wie erwartet
+   - TT gefällt mir nicht --> eigener View, kein Problem
+   - JS/CSS Handling ist nicht OK --> eigner Controller, kein Problem
+  Verständnis für Abläufe während eines Requests
+  Architektur-Ideen / Best Practices
+   0) nie Root-Controller nutzen
+      * index() außer natürlich bei Startseite
+      * default() Fehler-Seiten z.B. 404
+      * auto() kann hilfreich sein zum Setzen globaler Dinge
+        z.B. stash-Variablen zum Rendern des Layouts
+   1) pro Aufgabengebiet ein Controller
+      * z.B. Haupt-Navigations-Punkte / Grundfunktionen
+      * bei höherer Komplexität mehrere
+      * URLs sollten wenn möglich sprechend sein
+   2) gemeinsames Verhalten: Basisklassen bilden, z.B.:
+      * nur nach Login zu erreichende Seiten
+      * Seiten, die AJAX über einheitliches URL-Schema einsetzen
+      * Seiten, die identische Bestandteile haben
+      * Seiten, die identisches Verhalten an den Tag legen
+      * Gemeinsamkeiten in URLs --> :Chain ?
+      * VORHER: Moose verstehen (!)
+   3) Views, Forms und Templates sinnvoll planen
+      * identische Namen benutzen z.B.:
+         + Controller NameSpace::Name
+         + sub 'subname'
+         + URI /namespace/name/subname
+         + Template root/(tt|other_dir)/namespace/name/subname.xxx
+         + Form root/forms/namespace/name/subname.yml
+      * falls es nur einen View gibt:
+        config -> default_view :: class of default view to use
+                  override with stash->{current_view}
+      * Framework schaffen (wrapper)
+      * snippets, partials sinnvoll auslagern
+      * besondere Ausgabeformate, z.B.
+         + RSS / XML
+         + YAML / JSON
+         + generierte Grafiken oder PDF
+      * evtl. auf View komplett verzichten
+      * Sinnvoller Einsatz von session, flash, stash
+      * Forms (1):
+          + Validierungs-Features von HTML::FormFu nutzen!
+          + ??? TODO: WOHIN MIT DEN VALIDIERUNGS FUNKTIONEN???
+            z.B. MyApp::FormFuncs
+            in MyApp -> use FormFuncs;
+          + unbedingt HTML::FormFu::Model::DBIC nutzen!! (test failed, force needed!)
+      * Forms (2):
+          + HTML::FormHandler ??? KEINE RENDERING FUNKTIONEN - MIST
+          + Forms als Klassen MyApp::Form::Xxx
+   4) Umgang mit Modellen (DBIx::Class)
+      * Tabellen-Name immer PLURAL
+      * Klassen-Name immer SINGULAR
+      * Datenbank-Schema statisch vs. dynamisch
+      * ??? TODO: eleganten Weg finden für Formular -> Datenbank
+   5) Catalyst Grundfunktionen erweitern
+      * Plugins: werden zu Basisklasse(n) von xxx_app
+      * Überladen von Funktionen in xxx_app
+      * Neue Funktionalität in Form von Methoden in xxx_app anlegen
+      * neue Controller / View Basisklassen
+      * nutze Moose
+        + before xxx => ...
+        + after xxx => ...
+        + around xxx => ...
+   6) immer Catalyst-Funktionen nutzen!
+      * $c->uri_for() -- NIE hartcodierte URLs nutzen!
+        + $c->uri_for($c->action('action_sub_name')) # same controller
+        + $c->uri_for($c->controller('Contr')->action_for('sub_name')) # other
+      * $c->path_to(...) -- NIE eigene Pfade bauen
+      * $c->action
+      * $c->controller
+      * $c->view
+      * $c->model
+      * $c->forward
+   7) Sinnvoll konfigurieren
+      * ENV-Variablen: -> höchste Prio
+        --> zum Testing geeignet
+          XXX_APP_PORT   || CATALYST_PORT
+          XXX_APP_RELOAD || CATALYST_RELOAD
+          XXX_APP_ENGINE || CATALYST_ENGINE
+          XXX_APP_DEBUG  || CATALYST_DEBUG
+          XXX_APP_STATS  || CATALYST_STATS
+      * xxx_app.conf -> hohe Prio
+        --> als override für test-deploys
+        Top-Level-keys :: application
+        Spezielle Keys (session, authentication) für gewisse Plugins
+        'Controller::Xxx', 'View::Xxx', 'Model::Xxx' -> ...
+        NUR WENN CONFIG-LOADER mit dabei!!!
+      * Application __PACKAGE__->config(...) -> niedrigere Prio
+        --> standard LIVE
+        keys wie xxx_app.conf (!)
+      * Controller/View __PACKAGE__->config(...) -> niedrigste Prio
+        --> standard LIVE
+
+      bei Moose-Apps werden alle Optionen als Hash bei new() mitgegeben,
+      accessor-Methoden werden dadurch aufgerufen...
+   8) Deployment planen
+      * FastCGI stark empfohlen
+      * statische Bestandteile evtl. anders behandeln
+      * Datenbank Schema Migrationen
+      * Downtime einkalkulieren
+   9) Tests
+      * werden als Skelett durch xxx_app_create.pl script erzeugt
+  Gotchas
+   - DBIx - Tabellen-Name == Plural
+   - config
+      * xxx_app.pm vs. xxx.app.conf
+        .pm has higher prio --- really??? -- TODO: check
+      * alle von Component abstammenden Klassen:
+        <Controller::xxx> key in .conf (!)
+        ruft entsprechende accesor-methoden (Übergabe bei new())
+      * shell Variablen z.B. CATALYST_HOME, MYAPP_HOME, ...
+   - :Global und Root-Controller sind gefährlich!
+   - deploy: /static -- kein :Global("/static") !!!
+  Fazit: Catalyst ist cool
+   - solides Grundgerüst
+   - alles ist machbar
+   - flexibel, keine vorgegebenen Wege, die eingehalten werden müssen
+
+HTML::FormFu things
+-------------------
+
+ - Templates für jedes Element als TT-Templates
+   /Library/Perl/5.8.8/auto/share/dist/HTML-FormFu/templates/tt/xhtml/...
+ - Normales Markup pro Element
+        <container_tag>           // if defined
+        <legend>                  // if label_tag == 'legend'
+        <span class="error_message <<error_class>>"> // for each error
+        <label...>
+        <input|select|...>
+        <span >...comment
+        </container_tag>          // if defined
+        <script>...</script>      // if defined
+ - Gruppierende Elemente
+    + Multi
+        <div class="multi"><span class="elements"> ...
+    + Repeatable
+        <div> pro Wiederholung
+    + Block
+        <tag>
+        <legend...>               // if defined
+        ...elemente
+        </tag>
+ - Normale Elemente
+   
+
+ - GOTCHAs
+    + model_config: delete_if_true => 'name_of_delete_field
+      geht nicht innerhalb eines Multi- / Block-Elements...
+      --> keine Gruppierung auf diese Weise moeglich
+    + model_config: delete_if_true
+      --> delete-Feld DARF NICHT 'delete' HEISSEN!!!
+    + ERROR: foreign-key und primary-key müssen verschiedene Namen haben
+      bei 1:n Beziehungen bei FormFu::Model 0.04003 (BUG)
+
+
+Building and deploying a Catalyst Application
+---------------------------------------------
+
+00) Use a developer release of Catalyst-Runtime
+    $ perl Makefile.PL PREFIX=/path/to/lib
+    $ make && make test && make install
+    $ PERL5LIB=/path/to/lib/lib/perl5/site_perl ./app_server.pl
+
+
+0) install Catalyst
+   - Task::Catalyst // or Catalyst::Runtime
+   - optional: Catalyst::Manual
+   - for developing: Catalyst::Devel
+
+
+1) build an application skeleton
+   NEEDS: Catalyst::Devel
+   - catalyst.pl Namespace::Of::Your::App
+     catalyst.pl -help for more info!
+
+
+2) start devel-server
+   - ./scripts/<<your_app>>_server.pl
+
+
+3) create stuff
+   - ./scripts/<<your_app>>_create.pl ....
+
+   DB: static  == statically generated Schema files
+       dynamic == read schema at server-start
+
+   - ./script/cat_app_create.pl model DB DBIC::Schema cat_app::Schema \
+         create=static dbi:Pg:dbname=catalyst postgres ''
+   - ./script/cat_app_create.pl model DB DBIC::Schema cat_app::Schema \
+         create=dynamic dbi:Pg:dbname=catalyst postgres ''
+
+
+4) Application planning
+   - divide into different independant jobs
+
+
+5) Session Management
+   - in App:
+     use Catalyst qw(...
+                     Session
+                     Session::State::Cookie
+                     Session::Store::File
+                     ...
+                    );
+     * Session::Store::File is in CORE,
+     * Session::Store::FastMmap extra...
+
+   - in App Config:
+     session => {
+         cookie_name => 'cat_app_sid',
+         storage     => '/tmp/cat_app_session',
+     }
+
+   - Zugriff via $c->session->{key} ...
+
+
+6) Authentication (requires Session)
+   - in App:
+     use Catalyst qw(... Authentication ...);
+   - config:
+     CAVEAT: role_relation  => 'person_roles'
+     name must be PLURAL even if real table name is 'person_role' :-)
+     
+
+7) Have every config in a .conf file when overloading, in classes otherwise
+   - App Config keys:
+      * name :: name of the app
+      * default_view :: class of default view to use
+        override with stash->{current_view}
+        override with stash->{current_view_instance}
+      * default_model :: class of default model to use
+        override with stash->{current_model}
+        override with stash->{current_model_instance}
+      * home :: home directory, basis for $c->path_to() method
+      * show_internal_actions :: auch _BEGIN, _END, _DISPATCH zeigen
+      * parse_on_demand :: wenn aus, kein prepare_body() in prepare()
+      * setup_components :: extra Komponenten-klassen zum setup
+      * search_extra :: weitere Suchpfade angeben
+      * root :: wenn nicht <<home>>/root, dann angeben
+      * case_sensitive :: beim url -> action mapping, default 0
+      * using_frontend_proxy
+      * ignore_frontend_proxy
+
+
+8) DBIx::Class best practices
+   - table-name == plural
+     * does this make sense?
+     * effects???
+
+9) Deployment
+   - Apache2 + mod_perl2
+     <VirtualHost *:80>
+         ServerAdmin webmaster@localhost
+         ServerName cat
+         DocumentRoot "/Users/wolfgang/proj/cat_app/trunk/root"
+         ErrorLog "/private/var/log/apache2/cat-error_log"
+         CustomLog "/private/var/log/apache2/cat-access_log" "common"
+     
+         <Perl>
+           use lib '/Users/wolfgang/proj/cat_app/trunk/lib';
+         </Perl>
+         PerlModule cat_app
+     
+         <Location "/">
+             Order allow,deny
+             Allow from all
+             SetHandler perl-script
+             PerlResponseHandler cat_app
+         </Location>
+     
+         <LocationMatch "/(static|favicon.ico)">
+             SetHandler default-handler
+         </LocationMatch>
+     </VirtualHost>
+
+   - Apache2 + fastcgi
+     httpd.conf :: LoadModule ... mod_fastcgi must be enabled
+     
+     # outside of virtual-host
+     FastCgiServer /Users/wolfgang/proj/cat_app/trunk/script/cat_app_fastcgi.pl -processes 3
+     
+     <VirtualHost *:80>
+         ServerAdmin webmaster@localhost
+         ServerName fcgi
+         DocumentRoot /Users/wolfgang/proj/cat_app/trunk/root
+         ErrorLog "/private/var/log/apache2/fcgi-error_log"
+         CustomLog "/private/var/log/apache2/fcgi-access_log" "common"
+
+         Alias /static /Users/wolfgang/proj/cat_app/trunk/root/static
+         Alias /favicon.ico /Users/wolfgang/proj/cat_app/trunk/favicon.ico
+         ScriptAlias / /Users/wolfgang/proj/cat_app/trunk/script/cat_app_fastcgi.pl/
+
+         <Location "/">
+             Order allow,deny
+             Allow from all
+         </Location>
+
+         <Directory /Users/wolfgang/proj/cat_app/trunk/script/>
+             SetHandler fastcgi-script
+             Options +ExecCGI
+         </Directory>
+     </VirtualHost>
+
+
+10) used stash->{} keys
+    * template -- rendering template (Action::RenderView)
+    * current_model / current_model_instance
+    * current_view / current_view_instance
+    * yield / yield_list (View::ByCode)
+
+
+11) Unicode support
+   - Catalyst::Plugin::Unicode
+   - DBIx::Class::UTF8Columns -- must get added to load_columns()...
+   - see HTML::FormFu::Manual::Unicode
+
+
+X) Interesting Plugins / Extensions
+   - DEPRICATED -- C::P::BindLex :: Binde $var :Stashed -> $c->stash->{var}
+   - DEPRICATED -- C::P::FormBuilder :: sub xxx :Form {}
+   - C::C::HTML::FormFu -- form engine
+   - C::P::SmartURI :: uri_for() modified...
+   - C::P::Assets :: collect and minify CSS/JS
+   - C::P::Unicode :: unicode support
+   - C::P::Mail::Sender :: send mails
+
+
+XX) Convenient Config options
+    session => {flash_to_stash => 1}
+
+
+XXX) Tricky things
+    - silent redirect after action did run.
+         # requires flash_to_stash:1
+         $c->{flash}->{...} = ...;
+         $c->response->redirect(url_for(...));
+         $c->detach();
+
+
+--- DB:
+create table person (
+    person_id serial not null primary key,
+    person_name varchar(40) not null,
+    person_login varchar(20) not null unique,
+    person_password varchar(20) not null,
+    person_email varchar(40) not null,
+    person_active boolean not null default true
+);
+
+create table role (
+    role_id varchar(16) not null primary key,
+    role_name varchar(60) not null
+);
+
+create table person_role (
+    person_id integer not null references person(person_id),
+    role_id varchar(16) not null references role(role_id),
+    primary key (person_id, role_id)
+);
+
+
+--- EXTENDING ./scripts/<<your_app>>_create.pl
+   - model/view/controller --> hard coded
+   - otherwise: Catalyst::Helper::xxx must exist
+                and can('mk_stuff')
+
+--- to test:
+* Can a controller that we inherit define
+    sub base :PathPrefix :Chained :CaptureArgs(0) {}
+    sub ajax :Chained('base') :CaptureArgs(0) { ... }
+  so that we can define our
+    sub whatever :Chained('ajax') ... { ... }
+  ---> works - yeah!!!
+  
+
+--- best practice ideas
+
+* Find a way to map URIs to subs
+  - when to use chains?
+  - chains vs. package + package::subpackage
+  - how to sort-in ajax?
+    + local one-time ajax stuff
+      url: <<action_namespace>> / ajax / ... ???
+    + global universal ajax-stuff
+      Controller MyApp::Ajax.pm
+      /ajax  --> general thing
+      
+  - uses for forward/detach, visit/go ?
+  
+* Session
+  - flash (wie Rails)
+
+* Authorization / Authentication
+  $c->detach('unauthorized') unless $c->check_user_roles('xxx');
+
+--- internals:
+
+Plugins: manche Methoden wiederholen sich... was passiert hier genau?
+
+C == 'Catalyst'
+
+  use Catalyst qw(...)
+    -Debug        debugging einschalten
+    -Engine=...   zu nutzende Engine
+    -Home=...     anderes Home-Verzeichnis
+    -Log=...      Log-Level
+    -Stats=...    enable statistik-sammlung und reporting
+                  vor und nach &execute() tracking...
+    -IRGENDWAS=x  &App::setup_irgendwas($class, x) aufrufen, 
+                  wenn möglich, sonst warning
+                  
+  handle request::
+    - $c = $class->prepare(@arguments)
+    - $c->dispatch
+    - $c->finalize
+
+C::
+  - classdata (Class::Data::Inheritable)
+    * context_class == undef --> defaults to Application
+    * dispatcher_class == Catalyst::Dispatcher
+      + regelt URI -> Action mapping
+    * engine_class
+      + override mit 'use Catalyst qw(-Engine=CGI);' in Application
+      + regelt Zwischenschicht zwischen HTTP-Server und C
+    * request_class
+    * response_class
+    * stats_class
+
+Request Processing:
+  C::forward(action, ...) // C::forward(package, action, ...)
+  C::detach(...same as fwd...)
+     zurück bis auf call-level 1
+  C::visit(...)
+  C::go(...)
+     zurück bis auf call-level 0
+
+Controller:_DISPATCH
+  - $self->_dispatch_steps -- normalerweise: _BEGIN _AUTO _ACTION
+  
+C::Controller -> magic subs
+  - default :Path
+  
+  - index :Path :Args(0)
+    * declaring index :Private
+      inhibits default index behavior
+  
+  - begin :Private
+  
+  - end :Private
+  
+  - auto :Private
+
+C::Controller -> Attribute
+  - Definition in C::AttrContainer
+  - Speicherung in _attr_cache (mk_classdata << Class::Data::Inheritable)
+  - Zugriff über action->attributes --> Hashref
+  - vor Zusammentragen merge mit 
+    ($self || $self->config)->{'*'} und ->{$name} ???
+  - Zusammentragen im Controller und Aufruf von 
+      _parse_Xxxx_attr($self, $c, $method_name, $attribute_value) --> ($)
+    für jeden Wert des Attributes (bei mehrfach-Vorkommen)
+    in Controller::_parse_attrs
+  -- see attributes (3pm)
+    * ActionClass
+      - nicht '+...' -> app-action-class prefixen
+      --> ActionClass ... zurückliefern
+    * Args
+      - in Action.pm / DispatchType::Chained.pm knacken
+    * CaptureArgs
+      - in ActionChain.pm / DispatchType::Chained.pm knacken
+    * Chained
+      - undefined, leer --> '/'
+      - '.' --> '/<<action_namespace($c)'
+      - '../' --> bereinigen
+      - relative Pfade -> action_namespace($c) prefixen
+      --> Chained + bereinigter Wert
+    * ChainedParent
+      --> value um '../' prefixen
+      --> weiter mit Chained
+    * Global / Absolute
+      == Path("/name_of_sub")
+    * Local / Relative
+      == Path("name_of_sub")
+    * LocalRegex / LocalRegexp
+      - falls kein absoluter Pfad: (?:.*?) prefixen
+      - path_prefix($c) / prefixen
+      - weiter mit Regex
+    * MyAction
+      - aus wert wird AppClass::Action::wert
+      --> ActionClass ... zurückliefern
+    * Path
+      - undefined => '', weitermachen
+      - /... --> Path '/...' zurückliefern, absoluter Pfad
+      - ...  --> Path '<<path_prefix($c)>>/...' zurückliefern, absoluter Pfad
+      - (leer) --> Path <<path_prefix($c)>> zurückliefern, absoluter Pfad
+    * PathPart
+      --> PathPart ... zurückliefern
+    * PathPrefix
+      --> PathPart path_prefix()
+    * Private
+      - nur alleine erlaubt, syntaktischer Zucker
+    * Regex / Regexp
+      --> Regex ... zurückliefern
+    * sonstige --> 1:1 eintragen, Abfrage erfolgt evtl...
+      
+    Resultat:
+      ActionClass / Chained / Path / PathPart
+  
+C::Action
+  - Accessor 'attributes' -- wie wird er befüllt?
+  
+  
+Hierarchie:
+
+C >> C::Component
+C::Action::RenderView >> C::Action
+  - execute :: view aufrufen falls noch kein response
+C::Action >> Class::Accessor::Fast
+C::ActionChain >> C::Action
+C::ActionContainer >> Class::Accessor::Fast
+C::AttrContainer >> Class::Accessor::Fast Class::Data::Inheritable
+C::Authentication::Credential::Password >> Class::Accessor::Fast
+C::Authentication::Realm::Compatibility >> C::Authentication::Realm
+C::Authentication::Realm::Progressive >> C::Authentication::Realm
+C::Authentication::Realm::SimpleDB >> C::Authentication::Realm
+C::Authentication::Realm >> Class::Accessor::Fast
+C::Authentication::Store::DBIx::Class::User >> C::Authentication::User
+C::Authentication::Store::DBIx::Class::User >> Class::Accessor::Fast
+C::Authentication::Store::DBIx::Class >> Class::Accessor::Fast
+C::Authentication::Store::Minimal >> Class::Accessor::Fast
+C::Authentication::Store::Null >>  Class::Accessor::Fast
+C::Authentication::User::Hash >> C::Authentication::User
+C::Authentication::User >> Class::Accessor::Fast
+C::Base >> C::Controller
+C::Component >> Class::Accessor::Fast Class::Data::Inheritable
+C::Controller::HTML::FormFu::Action::Form >>  C::Action
+C::Controller::HTML::FormFu::Action::FormConfig >>  C::Action
+C::Controller::HTML::FormFu::Action::FormMethod >>  C::Action
+C::Controller::HTML::FormFu::Action::MultiForm >>  C::Action
+C::Controller::HTML::FormFu::Action::MultiFormConfig >>  C::Action
+C::Controller::HTML::FormFu::Action::MultiFormMethod >>  C::Action
+C::Controller >> C::Component C::AttrContainer Class::Accessor::Fast
+C::DispatchType::Chained >> C::DispatchType
+C::DispatchType::Default >> C::DispatchType
+C::DispatchType::Index >> C::DispatchType
+C::DispatchType::Path >> C::DispatchType
+C::DispatchType::Regex >> C::DispatchType::Path
+C::DispatchType >> Class::Accessor::Fast
+C::Dispatcher >> Class::Accessor::Fast
+C::Engine::Apache::MP13 >> C::Engine::Apache
+C::Engine::Apache >> C::Engine
+C::Engine::Apache2::MP19 >> C::Engine::Apache2
+C::Engine::Apache2::MP20 >> C::Engine::Apache2
+C::Engine::Apache2 >> C::Engine::Apache
+C::Engine::CGI >> C::Engine
+C::Engine::FastCGI >> C::Engine::CGI
+C::Engine::HTTP::Restarter::Watcher >> Class::Accessor::Fast
+C::Engine::HTTP::Restarter >> C::Engine::HTTP
+C::Engine::HTTP >> C::Engine::CGI
+C::Engine >> Class::Accessor::Fast
+C::Helper::Model::DBIC::Schema >> DBIx::Class::Schema::Loader
+C::Helper::View::CSS::Minifier::XS >> C::View::CSS::Minifier::XS
+C::Helper::View::CSS::Squish >> C::View::CSS::Squish
+C::Helper::View::JavaScript::Minifier::XS >> C::View::JavaScript::Minifier::XS
+C::Helper::View::TT >> C::View::TT
+C::Helper::View::TTSite >> C::View::TT
+C::Helper >> Class::Accessor::Fast
+C::Log >> Class::Accessor::Fast
+C::Model::DBIC::Schema >> C::Model Class::Accessor::Fast Class::Data::Accessor
+C::Model >> C::Component
+C::Plugin::Authentication::User::Hash >> C::Authentication::User::Hash
+C::Plugin::Authentication::User >> C::Authentication::User
+C::Plugin::Authentication >> Class::Accessor::Fast Class::Data::Inheritable
+C::Plugin::Authorization::ACL::Engine >> Class::Accessor::Fast Exporter
+C::Plugin::Authorization::ACL >> Class::Data::Inheritable
+C::Plugin::Session::State::Cookie >> C::Plugin::Session::State Class::Accessor::Fast
+C::Plugin::Session::State::URI >> C::Plugin::Session::State Class::Accessor::Fast
+C::Plugin::Session::Store::Dummy >> C::Plugin::Session::Store
+C::Plugin::Session::Store::File >>  Class::Data::Inheritable, C::Plugin::Session::Store
+C::Plugin::Session >> Class::Accessor::Fast
+C::Plugin::StackTrace >> Class::Accessor::Fast
+C::Plugin::Static::Simple >> Class::Accessor::Fast, Class::Data::Inheritable
+C::Request::Upload >> Class::Accessor::Fast
+C::Request >> Class::Accessor::Fast
+C::Response >> Class::Accessor::Fast
+C::View::CSS::Minifier::XS >> C::View
+C::View::CSS::Squish >> C::View
+C::View::JavaScript::Minifier::XS >> C::View
+C::View::TT >> C::View
+C::View >> C::Component

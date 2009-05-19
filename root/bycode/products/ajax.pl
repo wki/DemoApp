@@ -1,0 +1,3 @@
+div {
+    'AJAX.pl running';
+}

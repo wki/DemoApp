@@ -1,0 +1,87 @@
+/* form.css */
+
+form {
+    position: relative;
+}
+
+fieldset {
+    padding: 10px;
+    /* -webkit-box-shadow: 2px 4px 4px rgba(0,0,0,0.7); */
+}
+
+form div {
+}
+
+form div.error {
+    background-color: #ff9999;
+}
+
+form div label {
+    float: left;
+    display: block;
+    width: 200px;
+    padding-top: 5px;
+    padding-right: 10px;
+    text-align: right;
+}
+
+form fieldset div label {
+    width: 186px;
+}
+
+form div.constraint_required label:after {
+    position: absolute;
+    top: auto;
+    left: auto;
+    padding-left: 3px;
+    content: "*";
+    color: red;
+}
+
+span.error_message {
+    float: right;
+    color: red;
+    padding: 5px 0px 0px 4px;
+}
+
+/*
+   hide the delete checkbox but show a delete icon
+*/
+div.delete_checkbox {
+    /*
+    height: 16px;
+    background: url(/static/images/delete.png) top right no-repeat;
+    */
+}
+
+div.delete_checkbox input[type="checkbox"] {
+    display: none;
+}
+
+/*
+   repeatable fields
+*/
+div.repeatable_fields {
+    position: relative;
+    min-height: 20px;
+}
+
+div.repeatable_fields + div.repeatable_fields {
+    padding-top: 5px;
+    margin-top: 5px;
+    border-top: 1px dashed black;
+}
+
+div.repeatable_fields img.button {
+    position: absolute;
+    top: 4px;
+    right: 10px;
+}
+
+/*div.repeatable_fields:nth-child(2n+1) {
+    background-color: #ffffff;
+}
+
+div.repeatable_fields:nth-child(1) {
+    background-color: yellow;
+}*/

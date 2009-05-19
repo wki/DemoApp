@@ -1,0 +1,64 @@
+---
+action: /login/register
+indicator: Register
+auto_fieldset: 0
+auto_constraint_class: constraint_%t
+
+elements:
+  - type: Text
+    name: person_name
+    label: Name
+    constraints: 
+      - Required
+    filters:
+      - TrimEdges
+        
+  - type: Text
+    name: person_email
+    label: eMail
+    constraints: 
+      - Required
+      - Email
+      - type: Callback
+        callback: 'cat_app::Controller::Login::email_check'
+        message: Already in use
+    filters:
+      - TrimEdges
+
+  - type: Text
+    name: person_login
+    label: Login
+    constraints: 
+      - Required
+      - type: Callback
+        callback: 'cat_app::Controller::Login::login_check'
+        message: Already in use
+    filters:
+      - TrimEdges
+  
+  - type: Password
+    name: person_password
+    label: Password
+    constraints:
+      - Required
+    filters:
+      - TrimEdges
+  
+  - type: Password
+    name: repeat_password
+    label: Retype Password
+    constraints:
+      - type: Required
+      - type: Callback
+        callback: 'cat_app::Controller::Login::double_check'
+        message: Not same as password
+    filters:
+      - TrimEdges
+
+  - type: Submit
+    name: Register
+    label: ' '
+    value: Register
+
+constraints:
+  - SingleValue

@@ -1,0 +1,55 @@
+creating a fresh application 'DemoApp'
+
+
+$ catalyst.pl DemoApp
+
+$ ./script/demoapp_create.pl view ByCode ByCode
+
+$ ./script/demoapp_create.pl controller Js Combine
+
+$ ./script/demoapp_create.pl controller Css Combine
+
+create database:
+
+CREATE TABLE colors (
+    color_id serial NOT NULL PRIMARY KEY,
+    color_name character varying(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE products (
+    product_id serial NOT NULL PRIMARY KEY,
+    product_name character varying(40),
+    product_nr character varying(10) not null unique,
+    price numeric(9,2),
+    color_id integer references colors(color_id)
+);
+
+CREATE TABLE sizes (
+    size_id serial NOT NULL PRIMARY KEY,
+    product_id integer NOT NULL references products(product_id),
+    size_name character varying(40) NOT NULL,
+    size_code character varying(10)
+);
+
+CREATE TABLE persons (
+    person_id serial NOT NULL PRIMARY KEY,
+    person_name character varying(40) NOT NULL,
+    person_login character varying(20) NOT NULL unique,
+    person_password character varying(20) NOT NULL,
+    person_email character varying(40) NOT NULL,
+    person_active boolean DEFAULT true NOT NULL
+);
+
+CREATE TABLE roles (
+    role_id character varying(16) NOT NULL primary key,
+    role_name character varying(60) NOT NULL
+);
+
+CREATE TABLE persons_roles (
+    person_id integer NOT NULL references persons(person_id),
+    role_id character varying(16) NOT NULL references roles(role_id),
+    PRIMARY KEY (person_id, role_id)
+);
+
+$ ./script/demoapp_create.pl model DB DBIC::Schema DemoApp::Schema create=static dbi:Pg:dbname=demoapp postgres ''
+

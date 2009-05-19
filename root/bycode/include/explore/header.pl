@@ -1,0 +1,4 @@
+with {id => 'header'}
+div {
+    '';
+}
