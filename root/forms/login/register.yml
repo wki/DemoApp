@@ -20,7 +20,7 @@ elements:
       - Required
       - Email
       - type: Callback
-        callback: 'cat_app::Controller::Login::email_check'
+        callback: 'DemoApp::Controller::Login::email_check'
         message: Already in use
     filters:
       - TrimEdges
@@ -31,7 +31,7 @@ elements:
     constraints: 
       - Required
       - type: Callback
-        callback: 'cat_app::Controller::Login::login_check'
+        callback: 'DemoApp::Controller::Login::login_check'
         message: Already in use
     filters:
       - TrimEdges
@@ -50,7 +50,7 @@ elements:
     constraints:
       - type: Required
       - type: Callback
-        callback: 'cat_app::Controller::Login::double_check'
+        callback: 'DemoApp::Controller::Login::double_check'
         message: Not same as password
     filters:
       - TrimEdges

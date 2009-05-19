@@ -161,7 +161,7 @@ sub email_check :Private {
     my $value = shift;
     my $params = shift;
 
-    my $result = cat_app->model('DB::Persons')->search({person_email => $value});
+    my $result = DemoApp->model('DB::Persons')->search({person_email => $value});
     
     return $result->next ? 0 : 1;
 }
@@ -178,7 +178,7 @@ sub login_check :Private {
     my $value = shift;
     my $params = shift;
 
-    my $result = cat_app->model('DB::Persons')->search({person_login => $value});
+    my $result = DemoApp->model('DB::Persons')->search({person_login => $value});
     
     return $result->next ? 0 : 1;
 }

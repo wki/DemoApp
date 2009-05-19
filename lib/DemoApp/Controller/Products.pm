@@ -53,7 +53,8 @@ sub show :Local :Args(1) {
     my $id = shift;
     
     $c->stash->{product} = $c->model('DB::Products')->find($id);
-    # $c->stash->{template} = 'products/show.pl';
+    # we must set this to make detail() below work...
+    $c->stash->{template} = 'products/detail.pl';
     
     $c->stash->{title} .= ' - ' . $c->stash->{product}->product_name;
 }

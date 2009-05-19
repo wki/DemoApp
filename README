@@ -1,1 +1,9 @@
-Run script/demoapp_server.pl to test the application.
+This is just a stupid demo application, not more.
+
+I use it to learn Catalyst. Every hint is welcome :-)
+
+To run it, you will need
+  - Catalyst::Controller::Combine
+  - Catalyst::View::ByCode
+plus some more CPAN modules, have a try!
+

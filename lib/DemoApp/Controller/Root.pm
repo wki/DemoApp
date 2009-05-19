@@ -2,7 +2,7 @@ package DemoApp::Controller::Root;
 
 use strict;
 use warnings;
-use parent 'Catalyst::Controller';
+use parent 'DemoApp::RequireLoginController';
 
 #
 # Sets the actions in this controller to be registered with no prefix
@@ -28,9 +28,8 @@ DemoApp::Controller::Root - Root Controller for DemoApp
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
-
-    # Hello World
-    $c->response->body( $c->welcome_message );
+    
+    $c->stash->{title} = 'Home';
 }
 
 sub default :Path {

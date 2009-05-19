@@ -47,7 +47,7 @@ elements:
     empty_first: 1
     empty_first_label: '- none -'
     model_config:
-      resultset: Color
+      resultset: Colors
       label_column: color_name
       attributes:
         order_by: color_name
