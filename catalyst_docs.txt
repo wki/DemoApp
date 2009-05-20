@@ -157,10 +157,18 @@ $foo Artikel - Erfahrungen
           + HTML::FormHandler ??? KEINE RENDERING FUNKTIONEN - MIST
           + Forms als Klassen MyApp::Form::Xxx
    4) Umgang mit Modellen (DBIx::Class)
-      * Tabellen-Name immer PLURAL
-      * Klassen-Name immer SINGULAR
+      * nur ein Model: config default_model => 'DB' or whatever its name is
+      * Tabellen-Name immer PLURAL 
+          --> Catalyst::Manual::Tutorial::MoreCatalystBasics --> SINGULAR!
+          --> Klassen-Name MyApp::Schema::Result::Xxx auch PLURAL
+          --> has_many Beziehungen ist Plural
+          TODO: einfach beides probieren (!)
       * Datenbank-Schema statisch vs. dynamisch
       * ??? TODO: eleganten Weg finden für Formular -> Datenbank
+      * verstehen Result / ResultSet
+        in MyApp::Schema::Result::Xxx
+          __PACKAGE__->resultset_class('MyApp::Schema::ResultSet::Xxx')
+          --> dann neue Klasse anlegen und erweitern...
    5) Catalyst Grundfunktionen erweitern
       * Plugins: werden zu Basisklasse(n) von xxx_app
       * Überladen von Funktionen in xxx_app
