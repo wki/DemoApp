@@ -1,6 +1,5 @@
 creating a fresh application 'DemoApp'
 
-
 $ catalyst.pl DemoApp
 
 $ ./script/demoapp_create.pl view ByCode ByCode

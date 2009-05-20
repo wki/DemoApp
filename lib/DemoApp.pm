@@ -61,7 +61,7 @@ __PACKAGE__->config(
                     class          => 'DBIx::Class',
                     user_model     => 'DB::Persons',
                     role_relation  => 'DB::PersonsRoles',
-                    # role_relation  => 'persons_roles', #'DB::PersonsRoles',
+                    # role_relation  => 'persons_roles',
                     role_field     => 'role_id',
                 },
             },
