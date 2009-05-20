@@ -41,6 +41,7 @@ our $VERSION = '0.01';
 __PACKAGE__->config(
     name => 'DemoApp',
     default_view => 'ByCode',
+    default_model => 'DB',
     
     session => {
         cookie_name => 'demoapp_sid',
