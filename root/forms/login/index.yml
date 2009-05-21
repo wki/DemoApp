@@ -1,5 +1,5 @@
 ---
-action: /login
+# action: /login
 indicator: Login
 auto_fieldset: 0
 #output_processors:
@@ -10,7 +10,7 @@ auto_fieldset: 0
 
 elements:
   - type: Text
-    name: username
+    name: login
     label: Login
     constraints:
       - Required

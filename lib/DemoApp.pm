@@ -55,15 +55,18 @@ __PACKAGE__->config(
             dbic => {
                 credential => {
                     class          => 'Password',
-                    password_field => 'person_password',
+                    password_field => 'password',
                     password_type  => 'clear',
                 },
                 store => {
                     class          => 'DBIx::Class',
-                    user_model     => 'DB::Persons',
-                    role_relation  => 'DB::PersonsRoles',
-                    # role_relation  => 'persons_roles',
-                    role_field     => 'role_id',
+                    user_model     => 'DB::Person',
+                    # role_relation  => 'Role',
+                    # role_field     => 'id',
+                    # role_relation  => 'roles',
+                    # role_field     => 'id',
+                    role_relation  => 'DB::PersonRole',
+                    role_field     => 'role',
                 },
             },
         },
@@ -108,8 +111,6 @@ around uri_for => sub {
     my $c = shift;
     my $path = shift;
     my @args = @_;
-    
-    # $c->log->debug('in around "uri_foo"');
     
     if (blessed($path) && $path->class && $path->class->can('uri_for')) {
         #

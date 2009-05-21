@@ -11,17 +11,17 @@ sub RUN {
 
     foreach my $product (@{stash->{products}}) {
         div {
-            div { 'No: '    . $product->product_nr };
-            div { 'Name: '  . $product->product_name };
+            div { 'No: '    . $product->nr };
+            div { 'Name: '  . $product->name };
             div { 'Price: ' . $product->price };
+            div { 'Color: ' . $product->color->name };
             div {
                 foreach my $size ($product->sizes) {
-                    li {$size->size_name};
-                    # pre { Data::Dumper->Dump([$size],['size']) };
+                    li {$size->name};
                 }
             };
             with { 
-                action => c->uri_for(c->controller->action_for('detail'), $product->product_id),
+                action => c->uri_for(c->controller->action_for('detail'), $product->id),
                 class => '_update_detail'
             } form {
                 with {
@@ -31,7 +31,7 @@ sub RUN {
                 } input;
             };
             div {
-                with { href => c->uri_for(c->controller->action_for('show'), $product->product_id) }
+                with { href => c->uri_for(c->controller->action_for('show'), $product->id) }
                 a { 'detail...' };
             };
             br;

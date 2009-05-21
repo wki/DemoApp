@@ -1,12 +1,12 @@
 ---
-action: /login/register
+# action: /login/register
 indicator: Register
 auto_fieldset: 0
 auto_constraint_class: constraint_%t
 
 elements:
   - type: Text
-    name: person_name
+    name: name
     label: Name
     constraints: 
       - Required
@@ -14,7 +14,7 @@ elements:
       - TrimEdges
         
   - type: Text
-    name: person_email
+    name: email
     label: eMail
     constraints: 
       - Required
@@ -26,7 +26,7 @@ elements:
       - TrimEdges
 
   - type: Text
-    name: person_login
+    name: login
     label: Login
     constraints: 
       - Required
@@ -37,7 +37,7 @@ elements:
       - TrimEdges
   
   - type: Password
-    name: person_password
+    name: password
     label: Password
     constraints:
       - Required

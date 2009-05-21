@@ -29,8 +29,7 @@ Catalyst Controller.
 
 =head2 auto :Private
 
-before rendering the login page, set the title and delete the header from the yi
-eld-list
+before rendering the login page, set the title and delete the header from the yield-list
 
 =cut
 
@@ -50,11 +49,11 @@ sub auto :Private {
 the actual login page.
 
 Displays a login form, receives login input and performs the login.
-When successful, redirects to '/'
+When successful, redirects to flash{next_page} or '/'
 
 =cut
 
-sub index :Path :Args(0) :FormConfig { # FormConfig('login/index.yml') {
+sub index :Path :Args(0) :FormConfig { # FormConfig('login/index.yml')
     my $self = shift;
     my $c = shift;
     
@@ -62,11 +61,8 @@ sub index :Path :Args(0) :FormConfig { # FormConfig('login/index.yml') {
     
     if ($form->submitted_and_valid) {
         $c->log->debug('login form submitted and valid');
-        my $username = $form->params->{username} || '';
-        my $password = $form->params->{password} || '';
-        
-        if ($c->authenticate({ person_login    => $username,
-                               person_password => $password  } )) {
+        if ($c->authenticate({ login    => $form->params->{login},
+                               password => $form->params->{password} } )) {
             # successful login
             $c->persist_user();
             $c->res->redirect($c->flash->{next_page} || '/');
@@ -86,7 +82,7 @@ sub index :Path :Args(0) :FormConfig { # FormConfig('login/index.yml') {
 
 =cut
 
-sub forgot_password :Local :FormConfig { # FormConfig('login/forgot_password.yml') {
+sub forgot_password :Local :FormConfig { # FormConfig('login/forgot_password.yml')
     my $self = shift;
     my $c = shift;
     
@@ -110,7 +106,7 @@ sub forgot_password :Local :FormConfig { # FormConfig('login/forgot_password.yml
 
 =cut
 
-sub register :Local :FormConfig { # FormConfig('login/register.yml') {
+sub register :Local :FormConfig { # FormConfig('login/register.yml')
     my $self = shift;
     my $c = shift;
 
@@ -123,7 +119,7 @@ sub register :Local :FormConfig { # FormConfig('login/register.yml') {
         #
         # add to DB
         #
-        $form->model->update( $c->model('DB::Persons')->new_result({}) );
+        $form->model->update( $c->model('DB::Person')->new_result({}) );
     } elsif ($form->has_errors) {
         $c->log->debug('register form errors');
         $c->stash->{message} = 'some errors - please retry';
@@ -161,9 +157,11 @@ sub email_check :Private {
     my $value = shift;
     my $params = shift;
 
-    my $result = DemoApp->model('DB::Persons')->search({person_email => $value});
+    my $result = DemoApp->model('DB::Person')
+                        ->search({email => $value})
+                        ->single();
     
-    return $result->next ? 0 : 1;
+    return $result ? 0 : 1;
 }
 
 =head2 login_check
@@ -178,9 +176,11 @@ sub login_check :Private {
     my $value = shift;
     my $params = shift;
 
-    my $result = DemoApp->model('DB::Persons')->search({person_login => $value});
+    my $result = DemoApp->model('DB::Person')
+                        ->search({login => $value})
+                        ->single();
     
-    return $result->next ? 0 : 1;
+    return $result ? 0 : 1;
 }
 
 =head2 double_check
@@ -195,7 +195,7 @@ sub double_check :Private {
     my $value = shift;
     my $params = shift;
         
-    return $params->{person_password} eq $value;
+    return $params->{password} eq $value;
 }
 
 =head1 AUTHOR

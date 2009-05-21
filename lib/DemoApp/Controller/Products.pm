@@ -29,16 +29,15 @@ sub index :Path :Args(0) {
     my $c  = shift;
 
     $c->stash->{title} = 'Product List';
-    $c->stash->{products} = [ $c->model('Products')
+    $c->stash->{products} = [ $c->model('DB::Product')
                                 ->search(
                                     {
                                     },
                                     {
-                                        prefetch => ['sizes'],
-                                    }
-                                )
+                                        prefetch => ['sizes', 'color'],
+                                        # prefetch => 'sizes',
+                                    })
                                 ->all() ];
-    # $c->stash->{template} = 'products/index.pl';
 }
 
 =head2 show
@@ -52,7 +51,7 @@ sub show :Local :Args(1) {
     my $c  = shift;
     my $id = shift;
     
-    $c->stash->{product} = $c->model('Products')->find($id);
+    $c->stash->{product} = $c->model('DB::Product')->find($id);
     # we must set this to make detail() below work...
     $c->stash->{template} = 'products/detail.pl';
     
@@ -71,7 +70,7 @@ sub edit :Local :Args(1) :FormConfig {
     my $id = shift;
     
     my $form = $c->stash->{form};
-    $c->stash->{product} = $c->model('Products')->find($id);
+    $c->stash->{product} = $c->model('DB::Product')->find($id);
     
     if ($form->submitted_and_valid) {
         #

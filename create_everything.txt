@@ -8,7 +8,8 @@ $ ./script/demoapp_create.pl controller Js Combine
 
 $ ./script/demoapp_create.pl controller Css Combine
 
-create database:
+create database (PLURAL):
+-------------------------
 
 CREATE TABLE colors (
     color_id serial NOT NULL PRIMARY KEY,
@@ -49,6 +50,93 @@ CREATE TABLE persons_roles (
     role_id character varying(16) NOT NULL references roles(role_id),
     PRIMARY KEY (person_id, role_id)
 );
+
+create database (SINGULAR)
+--------------------------
+
+CREATE TABLE color (
+    color_id serial NOT NULL PRIMARY KEY,
+    color_name character varying(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE product (
+    product_id serial NOT NULL PRIMARY KEY,
+    product_name character varying(40),
+    product_nr character varying(10) not null unique,
+    price numeric(9,2),
+    color_id integer references color(color_id)
+);
+
+CREATE TABLE size (
+    size_id serial NOT NULL PRIMARY KEY,
+    product_id integer NOT NULL references product(product_id),
+    size_name character varying(40) NOT NULL,
+    size_code character varying(10)
+);
+
+CREATE TABLE person (
+    person_id serial NOT NULL PRIMARY KEY,
+    person_name character varying(40) NOT NULL,
+    person_login character varying(20) NOT NULL unique,
+    person_password character varying(20) NOT NULL,
+    person_email character varying(40) NOT NULL,
+    person_active boolean DEFAULT true NOT NULL
+);
+
+CREATE TABLE role (
+    role_id character varying(16) NOT NULL primary key,
+    role_name character varying(60) NOT NULL
+);
+
+CREATE TABLE person_role (
+    person_id integer NOT NULL references person(person_id),
+    role_id character varying(16) NOT NULL references role(role_id),
+    PRIMARY KEY (person_id, role_id)
+);
+
+create database (SINGULAR + SIMPLE)
+--------------------------
+
+CREATE TABLE color (
+    id serial NOT NULL PRIMARY KEY,
+    name character varying(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE product (
+    id serial NOT NULL PRIMARY KEY,
+    name character varying(40),
+    nr character varying(10) not null unique,
+    price numeric(9,2),
+    color integer references color(id)
+);
+
+CREATE TABLE size (
+    id serial NOT NULL PRIMARY KEY,
+    product integer NOT NULL references product(id),
+    name character varying(40) NOT NULL,
+    code character varying(10)
+);
+
+CREATE TABLE person (
+    id serial NOT NULL PRIMARY KEY,
+    name character varying(40) NOT NULL,
+    login character varying(20) NOT NULL unique,
+    password character varying(20) NOT NULL,
+    email character varying(40) NOT NULL,
+    active boolean DEFAULT true NOT NULL
+);
+
+CREATE TABLE role (
+    id character varying(16) NOT NULL primary key,
+    name character varying(60) NOT NULL
+);
+
+CREATE TABLE person_role (
+    person integer NOT NULL references person(id),
+    role character varying(16) NOT NULL references role(id),
+    PRIMARY KEY (person, role)
+);
+
 
 $ ./script/demoapp_create.pl model DB DBIC::Schema DemoApp::Schema create=static dbi:Pg:dbname=demoapp postgres ''
 

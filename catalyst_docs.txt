@@ -158,11 +158,25 @@ $foo Artikel - Erfahrungen
           + Forms als Klassen MyApp::Form::Xxx
    4) Umgang mit Modellen (DBIx::Class)
       * nur ein Model: config default_model => 'DB' or whatever its name is
-      * Tabellen-Name immer PLURAL 
+      * Tabellen-Name immer SINGULAR
           --> Catalyst::Manual::Tutorial::MoreCatalystBasics --> SINGULAR!
           --> Klassen-Name MyApp::Schema::Result::Xxx auch PLURAL
-          --> has_many Beziehungen ist Plural
-          TODO: einfach beides probieren (!)
+          --> has_many Beziehungen ist immer Plural
+          --> belongs_to ist Foreign-Key Name
+          
+          my $products = [ $c->model('Product')->search(...)->all() ];
+          foreach my $product (@{$products}) {
+              # direct access
+              $product->accessor_name;
+              
+              # belongs_to
+              $product->foreign_key_name->foreign_table_accessor;
+              
+              # has_many
+              foreach my $size ($product->sizes) {
+                  $size->accessor_name;
+              }
+          }
       * Datenbank-Schema statisch vs. dynamisch
       * ??? TODO: eleganten Weg finden für Formular -> Datenbank
       * verstehen Result / ResultSet
