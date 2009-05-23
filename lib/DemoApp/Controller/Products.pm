@@ -27,6 +27,8 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my $self = shift;
     my $c  = shift;
+    
+    my $color = $c->model('DB::Color')->by_id(1);
 
     $c->stash->{title} = 'Product List';
     $c->stash->{products} = [ $c->model('DB::Product')
