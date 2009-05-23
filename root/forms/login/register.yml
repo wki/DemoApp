@@ -8,7 +8,7 @@ elements:
   - type: Text
     name: name
     label: Name
-    constraints: 
+    constraints:
       - Required
     filters:
       - TrimEdges
@@ -48,7 +48,7 @@ elements:
     name: repeat_password
     label: Retype Password
     constraints:
-      - type: Required
+      - Required
       - type: Callback
         callback: 'DemoApp::Controller::Login::double_check'
         message: Not same as password
