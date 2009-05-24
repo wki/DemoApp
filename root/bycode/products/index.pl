@@ -14,7 +14,7 @@ sub RUN {
             div { 'No: '    . $product->nr };
             div { 'Name: '  . $product->name };
             div { 'Price: ' . $product->price };
-            div { 'Color: ' . $product->color->name };
+            div { 'Color: ' . $product->color->name } if ($product->color);
             div {
                 foreach my $size ($product->sizes) {
                     li {$size->name};
@@ -39,6 +39,11 @@ sub RUN {
     }
     
     with {id => 'detail' } div { 'detail will follow...'};
+    
+    pre {
+        my $info = c->model('DB::Person')->result_source->column_info('name');
+        Data::Dumper->Dump([$info],['info']);
+    };
 
     #div {
     #    pre { Data::Dumper->Dump([c->dispatcher->_dispatch_types],['dispatch_types']); }

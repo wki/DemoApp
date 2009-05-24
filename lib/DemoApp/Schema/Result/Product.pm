@@ -53,10 +53,29 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-05-23 14:44:48
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nI8uAK1g/pvaSVLeJ7F9Cw
 
-
-# You can replace this text with custom content, and it will be preserved on regeneration
-
-# patch above belongs_to relation!
+#
+# patch above 'belongs_to' relation!
+#
 __PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" }, {join_type => 'left'});
+
+
+#
+# add some things for easier HTML-FormFu form generation
+#
+__PACKAGE__->column_info('name')->{extras}->{formfu} = {
+    filters => 'TrimEdges',
+};
+
+__PACKAGE__->column_info('nr')->{extras}->{formfu} = {
+    constraints => [
+        'Required',
+        {
+            type    => 'Regex',
+            regex   => '^[A-Z0-9]{4,8}$',
+            message => 'only A-Z, 0-9 allowed',
+        },
+    ],
+    filters => 'TrimEdges',
+};
 
 1;

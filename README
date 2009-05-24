@@ -7,3 +7,28 @@ To run it, you will need
   - Catalyst::View::ByCode
 plus some more CPAN modules, have a try!
 
+-------
+
+Just some ideas...
+
+as a first try, Schema::Result::Product defines some extras for HTML::FormFu generation.
+
+Idea: create a form from a ResultSet...
+
+    my $rs = $c->model('DB::Product')
+               ->search({},{prefetch => ['sizes', 'color']});
+    
+    my $form = $rs->generate_form_fu({maybe some extras...});
+    # do something with this HTML::FormFu object...
+
+Pre-Requisites:
+ - load_components() in every Result Class must do something more
+ - we need a new Component, e.g. DBIx::Class::FormFuBuilder.pm
+
+Schema generation:
+  __PACKAGE__->form_fu_extras(column_name => {...});
+  
+  $rs->generate_form_fu(...);
+  
+
+---> see DBIx::Class::ResultSetProxy !!!
