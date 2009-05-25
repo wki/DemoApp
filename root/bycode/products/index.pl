@@ -41,8 +41,12 @@ sub RUN {
     with {id => 'detail' } div { 'detail will follow...'};
     
     pre {
-        my $info = c->model('DB::Person')->result_source->column_info('name');
-        Data::Dumper->Dump([$info],['info']);
+        my $rs = c->model('DB::Product');
+        my $info = $rs->result_source->column_info('name');
+        
+        $rs->generate_form_fu();
+
+        Data::Dumper->Dump([ref($rs), $info],['ref', 'info']);
     };
 
     #div {

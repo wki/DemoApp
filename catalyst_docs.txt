@@ -180,9 +180,16 @@ $foo Artikel - Erfahrungen
       * Datenbank-Schema statisch vs. dynamisch
       * ??? TODO: eleganten Weg finden für Formular -> Datenbank
       * verstehen Result / ResultSet
-        in MyApp::Schema::Result::Xxx
-          __PACKAGE__->resultset_class('MyApp::Schema::ResultSet::Xxx')
-          --> dann neue Klasse anlegen und erweitern...
+         + MyApp::Schema::Result::Xxx -- kommt von Schema::Loader
+         + MyApp::Schema::ResultSet::Xxx -- evtl selbst machen
+      * Schema.pm
+        eigene Base-Klasse(n) anlegen:
+          __PACKAGE__->load_namespaces(
+              default_resultset_class => 'Base::ResultSet',
+          );
+          
+        
+           
    5) Catalyst Grundfunktionen erweitern
       * Plugins: werden zu Basisklasse(n) von xxx_app
       * Überladen von Funktionen in xxx_app
