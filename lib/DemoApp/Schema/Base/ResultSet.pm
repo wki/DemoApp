@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base 'DBIx::Class::ResultSet';
 
-__PACKAGE__->load_components(qw(FormFuBuilder));
+# __PACKAGE__->load_components(qw(FormFuBuilder));
 
 
 1;

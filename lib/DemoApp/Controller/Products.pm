@@ -66,12 +66,16 @@ a simple editor for a product
 
 =cut
 
-sub edit :Local :Args(1) :FormConfig {
+sub edit :Local :Args(1) { #:FormConfig {
     my $self = shift;
     my $c  = shift;
     my $id = shift;
     
-    my $form = $c->stash->{form};
+    # my $form = $c->stash->{form};
+    my $rs = $c->model('DB::Product')->search({},{prefetch => [qw(color sizes)]});
+    my $form_structure = $rs->generate_form_fu();
+    my $form = $self->form($form_structure);
+    $c->stash->{form} = $form;
     $c->stash->{product} = $c->model('DB::Product')->find($id);
     
     if ($form->submitted_and_valid) {
@@ -93,7 +97,7 @@ sub edit :Local :Args(1) :FormConfig {
         $form->model->default_values($c->stash->{product});
     }
 
-    $c->stash->{title} .= ' - ' . $c->stash->{product}->product_name;
+    $c->stash->{title} .= ' - ' . $c->stash->{product}->name;
 }
 
 =head2 autocompleter

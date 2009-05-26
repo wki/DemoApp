@@ -15,4 +15,6 @@ __PACKAGE__->load_namespaces(
     default_resultset_class => 'Base::ResultSet',
 );
 
+DBIx::Class::ResultSet->load_components(qw(FormFuBuilder));
+
 1;

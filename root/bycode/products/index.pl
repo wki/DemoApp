@@ -41,12 +41,12 @@ sub RUN {
     with {id => 'detail' } div { 'detail will follow...'};
     
     pre {
-        my $rs = c->model('DB::Product');
+        my $rs = c->model('DB::Product')->search({},{prefetch=>['color','sizes']});
         my $info = $rs->result_source->column_info('name');
         
-        $rs->generate_form_fu();
+        my $form = $rs->generate_form_fu();
 
-        Data::Dumper->Dump([ref($rs), $info],['ref', 'info']);
+        Data::Dumper->Dump([$rs, $info, $form],['rs', 'info', 'form']);
     };
 
     #div {
