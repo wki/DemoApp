@@ -47,10 +47,10 @@ elements:
     empty_first: 1
     empty_first_label: '- none -'
     model_config:
-      resultset: Colors
-      label_column: color_name
+      resultset: Color
+      label_column: name
       attributes:
-        order_by: color_name
+        order_by: name
 
   # HAS-MANY relation
   - type: Fieldset

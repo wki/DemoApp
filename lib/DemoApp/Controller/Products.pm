@@ -73,7 +73,12 @@ sub edit :Local :Args(1) { #:FormConfig {
     
     # my $form = $c->stash->{form};
     my $rs = $c->model('DB::Product')->search({},{prefetch => [qw(color sizes)]});
-    my $form_structure = $rs->generate_form_fu();
+    my $form_structure = $rs->generate_form_fu({
+        indicator => 'Save', 
+        auto_fieldset => 0,
+        auto_constraint_class => 'constraint_%t',
+        attributes => {class => '_enhance'},
+    });
     my $form = $self->form($form_structure);
     $c->stash->{form} = $form;
     $c->stash->{product} = $c->model('DB::Product')->find($id);
@@ -95,6 +100,7 @@ sub edit :Local :Args(1) { #:FormConfig {
     } else {
         $c->log->debug('product form initial');
         $form->model->default_values($c->stash->{product});
+        $form->process();
     }
 
     $c->stash->{title} .= ' - ' . $c->stash->{product}->name;

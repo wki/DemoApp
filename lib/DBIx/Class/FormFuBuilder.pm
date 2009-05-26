@@ -47,6 +47,7 @@ sub form_fu_extra {
 
 sub generate_form_fu {
     my $rs = shift;
+    my $args = shift || {};
     
     my $result_source = $rs->result_source;
     my $cols = join(', ', $result_source->columns);
@@ -59,6 +60,8 @@ sub generate_form_fu {
         attributes  => {},
         elements    => [],
         constraints => [],
+        
+        %{$args}
     );
     
     #
@@ -68,6 +71,15 @@ sub generate_form_fu {
                        $rs->{_attrs}->{alias} || 'me',
                        @{$rs->{_attrs}->{select}} );
 
+    if ($args->{indicator}) {
+        push @{$form{elements}}, {
+            type => 'Submit',
+            name => $args->{indicator},
+            value => $args->{indicator},
+            label => ' ',
+        };
+    }
+    
     #
     # done :-)
     #
@@ -146,9 +158,25 @@ sub _add_elements {
         my %field = (
             name        => $column,
             label       => ucfirst($column),
+            type        => 'Text',
             constraints => [],
             filters     => [],
+            
+            # %{$info->{extras}->{formfu} || {}},
         );
+        if (exists($info->{extras}->{formfu})) {
+            # poor man's deep copy...
+            foreach my $key (%{$info->{extras}->{formfu}}) {
+                my $value = $info->{extras}->{formfu}->{$key};
+                if (!ref($value)) {
+                    $field{$key} = $value;
+                } elsif (ref($value) eq 'HASH') {
+                    $field{$key} = { %{$value} };
+                } elsif (ref($value) eq 'ARRAY') {
+                    $field{$key} = [ @{$value} ];
+                }
+            }
+        }
         
         if (exists($has_one{$column})) {
             #
@@ -158,24 +186,25 @@ sub _add_elements {
             if ($info->{is_nullable}) {
                 $field{empty_first} = 1;
                 $field{empty_first_label} = '- none -';
-                $field{model_config} = {
-                    resultset    => $has_one{$column}->{source},
-                    label_column => 'name', ### FIXME: wrong for other cases!
-                    attributes   => {
-                        ### TODO: fill me
-                    },
-                };
             }
+            $field{model_config} = {
+                resultset    => $has_one{$column}->{source},
+                label_column => 'name', ### FIXME: wrong for other cases!
+                attributes   => {
+                    order_by => 'name', ### FIXME
+                    ### TODO: fill me
+                },
+            };
+            #delete $field{constraints};
+            #delete $field{filters};
         } else {
             #
             # simple field
             #
-            $field{type} = 'Text'; ### silly default!
-        
             if (!$info->{is_nullable}) {
                 push @{$field{constraints}}, {type => 'Required'};
             }
-            if ($info->{datatype} eq 'numeric') {
+            if ($info->{data_type} eq 'numeric') {
                 push @{$field{constraints}}, {type => 'Number'};
             }
         }
@@ -215,8 +244,12 @@ sub _add_elements {
                            $rel_name, @repeat_columns);
         
         push @{$elements}, \%repeatable;
+        
+        push @{$elements}, {
+            type => 'Hidden',
+            name => "${rel_name}_count",
+        };
     }
-
 
 }
 
