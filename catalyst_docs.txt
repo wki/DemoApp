@@ -187,7 +187,10 @@ $foo Artikel - Erfahrungen
           __PACKAGE__->load_namespaces(
               default_resultset_class => 'Base::ResultSet',
           );
-          
+      * DBIC::Schema::Loader erstellt keine many_to_many Relationen
+         - __PACKAGE__->many_to_many() selbst machen!
+         - definiert nur accessor, joins manuell über zwischentabelle notwendig!!!
+           http://search.cpan.org/~ribasushi/DBIx-Class-0.08103/lib/DBIx/Class/Relationship.pm#many_to_many
         
            
    5) Catalyst Grundfunktionen erweitern

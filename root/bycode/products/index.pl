@@ -41,8 +41,9 @@ sub RUN {
     with {id => 'detail' } div { 'detail will follow...'};
     
     pre {
-        my $rs = c->model('DB::Product')->search({},{prefetch=>['color','sizes']});
-        my $info = $rs->result_source->column_info('name');
+        #my $rs = c->model('DB::Product')->search({},{prefetch=>['color','sizes']});
+        my $rs = c->model('DB::Person')->search({},{join => {person_roles => 'role'}});
+        #my $info = $rs->result_source->column_info('name');
         
         my $form = $rs->generate_form_fu({
             indicator => 'Save', 
@@ -51,9 +52,10 @@ sub RUN {
             attributes => {class => '_enhance'},
         });
 
-        Data::Dumper->Dump([$rs, $info],['rs', 'info']) .
+        Data::Dumper->Dump([$rs],['rs']) .
         Data::Dumper->Dump([$form],['form']);
     };
+    
 
     #div {
     #    pre { Data::Dumper->Dump([c->dispatcher->_dispatch_types],['dispatch_types']); }

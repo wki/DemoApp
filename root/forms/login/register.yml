@@ -55,6 +55,11 @@ elements:
     filters:
       - TrimEdges
 
+  - type: Checkboxgroup
+    name: person_roles
+    model_config:
+      resultset: Role
+
   - type: Submit
     name: Register
     label: ' '

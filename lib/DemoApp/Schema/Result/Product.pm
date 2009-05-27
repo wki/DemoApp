@@ -62,8 +62,6 @@ __PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "colo
 #
 # add some things for easier HTML-FormFu form generation
 #
-__PACKAGE__->load_components('FormFuBuilder');
-
 
 __PACKAGE__->column_info('name')->{extras}->{formfu} = {
     filters => 'TrimEdges',
