@@ -35,7 +35,6 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-05-23 14:44:48
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/y9FQfXB3XgRq273WyJcZA
 
-__PACKAGE__->many_to_many('roles', 'person_roles', 'role');
+__PACKAGE__->many_to_many('persons', 'person_roles', 'person');
 
-# You can replace this text with custom content, and it will be preserved on regeneration
 1;

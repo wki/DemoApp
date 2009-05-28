@@ -41,15 +41,16 @@ sub RUN {
     with {id => 'detail' } div { 'detail will follow...'};
     
     pre {
-        #my $rs = c->model('DB::Product')->search({},{prefetch=>['color','sizes']});
-        my $rs = c->model('DB::Person')->search({},{join => {person_roles => 'role'}});
+        my $rs = c->model('DB::Product')->search({},{prefetch=>['color','sizes']});
+        # my $rs = c->model('DB::Person')->search({},{join => {person_roles => 'role'}});
         #my $info = $rs->result_source->column_info('name');
         
         my $form = $rs->generate_form_fu({
-            indicator => 'Save', 
-            auto_fieldset => 0,
+            indicator             => 'Save', 
+            auto_fieldset         => 0,
             auto_constraint_class => 'constraint_%t',
-            attributes => {class => '_enhance'},
+            attributes            => {class => '_enhance'},
+            append                => {type => 'Blank'},
         });
 
         Data::Dumper->Dump([$rs],['rs']) .

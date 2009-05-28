@@ -13,6 +13,8 @@ __PACKAGE__->config(
     ],
 );
 
+DBIx::Class->load_components('FormFuBuilder');
+
 =head1 NAME
 
 DemoApp::Model::DB - Catalyst DBIC Schema Model

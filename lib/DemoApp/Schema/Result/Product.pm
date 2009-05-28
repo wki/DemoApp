@@ -56,18 +56,19 @@ __PACKAGE__->has_many(
 #
 # patch above 'belongs_to' relation!
 #
-__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" }, {join_type => 'left'});
-
+__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", 
+                        { id => "color" }, 
+                        { join_type => 'left' });
 
 #
 # add some things for easier HTML-FormFu form generation
 #
+__PACKAGE__->form_fu_extra(name => {
+    constraints => 'Required',
+    filters     => 'TrimEdges',
+});
 
-__PACKAGE__->column_info('name')->{extras}->{formfu} = {
-    filters => 'TrimEdges',
-};
-
-__PACKAGE__->column_info('nr')->{extras}->{formfu} = {
+__PACKAGE__->form_fu_extra(nr => {
     constraints => [
         'Required',
         {
@@ -76,7 +77,12 @@ __PACKAGE__->column_info('nr')->{extras}->{formfu} = {
             message => 'only A-Z, 0-9 allowed',
         },
     ],
-    filters => 'TrimEdges',
-};
+    filters     => 'TrimEdges',
+});
+
+__PACKAGE__->form_fu_extra(price => {
+    constraints => [qw(Required Number)],
+    filters     => 'TrimEdges',
+});
 
 1;

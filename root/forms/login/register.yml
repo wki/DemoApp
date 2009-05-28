@@ -56,7 +56,7 @@ elements:
       - TrimEdges
 
   - type: Checkboxgroup
-    name: person_roles
+    name: roles
     model_config:
       resultset: Role
 
@@ -65,5 +65,5 @@ elements:
     label: ' '
     value: Register
 
-constraints:
-  - SingleValue
+#constraints:
+#  - SingleValue

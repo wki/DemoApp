@@ -18,9 +18,4 @@ __PACKAGE__->load_namespaces(
     default_resultset_class => 'Base::ResultSet',
 );
 
-#
-# patch in FormBuilder -- is there a more elegant way?
-#
-DBIx::Class->load_components('FormFuBuilder');
-
 1;

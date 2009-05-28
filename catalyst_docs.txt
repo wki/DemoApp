@@ -1,82 +1,16 @@
 Catalyst - Docs
 ---------------
 
-strange save problem, see:
-http://www.gossamer-threads.com/lists/catalyst/users/23752
+Content:
+  I   - Catalyst vs. RoR
+  II  - Catalyst
+  III - DBIx::Class
+  IV  - Catalyst::Controller::HTML::FormFu
+  V   - Deployment
+  
 
-
-Form Examples
-sub foo : Local : FormConfig {
-    my ( $self, $c ) = @_;
-
-    my $form = $c->stash->{form};
-
-    if ( $form->submitted_and_valid ) {
-        # which project did the user select?
-        my $project_id = $form->param_value('project');
-
-        # retrieve the Project row
-        my $project = $c->model('Foo')->resultset('Projects')->find($project_id );
-
-        # this will remove all related directories from the many-to-many,
-        # and then associate all selected directories
-        $form->model->update( $project );
-
-        $c->response->redirect('/done');
-    }
-    elsif ( !$form->submitted ) {
-        $form->model->default_values;
-    }
-}
-
-
-sub edit :Local :FormConfig('invoices/edit_invoice.yml') {
-   my ($self, $c, $ivc_id) = @_;
-
-   my $form = $c->stash->{form};
-   my $invoice = ($ivc_id) ? $c->model('DB::Invoices')->find($ivc_id)
-                           : $c->model('DB::Invoices')->new_result({});
-
-   if ($c->request->param('cancel')) {
-     $c->response->redirect($c->uri_for("/invoices"));
-     $c->detach();
-   }
-
-   if ($form->submitted_and_valid()) {
-     $form->model->update($invoice);
-     $c->response->redirect($c->uri_for("/invoices"));
-     $c->detach();
-   } else {
-     $form->model->default_values($invoice);
-   }
-
-   $c->stash->{ivc_id} = $ivc_id;
-   $c->stash->{template} = 'invoices/invoice_edit.tt';
-   $c->stash->{stylesheet} = 'invoices/invoice_edit.css';
-}
-
-> ? ?elements:
-> ? ? ? ? ?- type: Repeatable
-> ? ? ? ? ? ?nested_name: branchen
-             counter_name: id # must match hidden field name below
-> ? ? ? ? ? ?elements:
-                - type: Hidden
-                  name: id # must match PK
-> ? ? ? ? ? ? ? - type: Checkboxgroup
-> ? ? ? ? ? ? ? ? label: 'Branche*'
-> ? ? ? ? ? ? ? ? name: branche
-> ? ? ? ? ? ? ? ? model_config:
-> ? ? ? ? ? ? ? ? ? model: Frontwave
-> ? ? ? ? ? ? ? ? ? resultset: Branche
-> ? ? ? ? ? ? ? ? ? id_column: id
-> ? ? ? ? ? ? ? ? ? label_column: name
-> ? ? ? ? ? ? ? ? ? attributes:
-> ? ? ? ? ? ? ? ? ? ? ? ?order_by: 'id asc'
-
-
-
-Odds and Ends - compared with RoR
----------------------------------
+I - Odds and Ends - compared with RoR
+--------------------------------------
 
   Perl/Catalyst                    Ruby/Rails
   -------------------------------------------------------------------
@@ -98,20 +32,12 @@ Odds and Ends - compared with RoR
   - uri_for() method not flexible  - url_for() method not flexible
   o Ajax possible                  + Ajax out of the box
   + config: global, package, shell o config ????
+  + FormFu rocks                   o something alike existing?
 
 
-$foo Artikel - Erfahrungen
---------------------------
+II - Catalyst
+-------------
 
-  Vorgeschmack: Catalyst ist kompliziert, alle stehen auf RoR
-   - aber: große Sites setzen es ein
-   - aber: Catalyst Leute sagen: RoR ist ein Spielzeug
-  Erste Berührung: installation war ein Klacks, aber
-   - Attribute versteh ich nicht
-   - Plugin verhält sich nicht wie erwartet
-   - TT gefällt mir nicht --> eigener View, kein Problem
-   - JS/CSS Handling ist nicht OK --> eigner Controller, kein Problem
-  Verständnis für Abläufe während eines Requests
   Architektur-Ideen / Best Practices
    0) nie Root-Controller nutzen
       * index() außer natürlich bei Startseite
@@ -257,6 +183,26 @@ $foo Artikel - Erfahrungen
    - alles ist machbar
    - flexibel, keine vorgegebenen Wege, die eingehalten werden müssen
 
+
+III - DBIx::Class
+-----------------
+
+ - Schema::Loader bevorzugt SINGULAR als Tabellen-Name
+ 
+ - has_many/many_to_many Beziehungen dürfen dann gerne PLURAL sein
+
+ - optimal: foreign_key Name === foreign_table Name
+   weil: my_table_resultset->foreign_key->column_name (!)
+
+ - Schema::Loader erzeugt keine many_to_many Beziehungen (!)
+   __PACKAGE__->many_to_many('roles', 'person_roles', 'role');
+   
+ - Schema::Loader erzeugt falsche Joins für NULL-able foreign keys
+   __PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", 
+                           { id => "color" }, 
+                           { join_type => 'left' });
+
+
 HTML::FormFu things
 -------------------
 
@@ -282,7 +228,38 @@ HTML::FormFu things
         ...elemente
         </tag>
  - Normale Elemente
-   
+ 
+ - Selectboxen aus anderen Tabellen füllen
+     + foreign key in eigener Tabelle auf fremde Tabelle
+     + SCHEMA (Product.pm):
+       __PACKAGE__->belongs_to("color", 
+                               "DemoApp::Schema::Result::Color", 
+                               { id => "color" });
+     + FORMULAR:
+       - type: Select
+         name: color
+         label: Color
+         empty_first: 1
+         empty_first_label: '- none -'
+         model_config:
+           resultset: Color
+           label_column: name
+           attributes:
+             order_by: name
+
+ - Checkbox-Group und Zwischentabelle zum Einfügen
+     + SCHEMA (Person.pm) -- wegen Zugriff auf set_roles() accessor:
+       __PACKAGE__->many_to_many('roles', 'person_roles', 'role');
+     
+     + SCHEMA (Role.pm) -- für diese Richtung nicht notwendig:
+       __PACKAGE__->many_to_many('persons', 'person_roles', 'person');
+       
+     + FORMULAR (für Tabelle 'person'):
+       - type: Checkboxgroup
+         name: roles
+         model_config:
+           resultset: Role
+       
 
  - GOTCHAs
     + model_config: delete_if_true => 'name_of_delete_field
@@ -294,8 +271,8 @@ HTML::FormFu things
       bei 1:n Beziehungen bei FormFu::Model 0.04003 (BUG)
 
 
-Building and deploying a Catalyst Application
----------------------------------------------
+V - Building and deploying a Catalyst Application
+-------------------------------------------------
 
 00) Use a developer release of Catalyst-Runtime
     $ perl Makefile.PL PREFIX=/path/to/lib
@@ -627,83 +604,3 @@ C::Controller -> Attribute
   
 C::Action
   - Accessor 'attributes' -- wie wird er befüllt?
-  
-  
-Hierarchie:
-
-C >> C::Component
-C::Action::RenderView >> C::Action
-  - execute :: view aufrufen falls noch kein response
-C::Action >> Class::Accessor::Fast
-C::ActionChain >> C::Action
-C::ActionContainer >> Class::Accessor::Fast
-C::AttrContainer >> Class::Accessor::Fast Class::Data::Inheritable
-C::Authentication::Credential::Password >> Class::Accessor::Fast
-C::Authentication::Realm::Compatibility >> C::Authentication::Realm
-C::Authentication::Realm::Progressive >> C::Authentication::Realm
-C::Authentication::Realm::SimpleDB >> C::Authentication::Realm
-C::Authentication::Realm >> Class::Accessor::Fast
-C::Authentication::Store::DBIx::Class::User >> C::Authentication::User
-C::Authentication::Store::DBIx::Class::User >> Class::Accessor::Fast
-C::Authentication::Store::DBIx::Class >> Class::Accessor::Fast
-C::Authentication::Store::Minimal >> Class::Accessor::Fast
-C::Authentication::Store::Null >>  Class::Accessor::Fast
-C::Authentication::User::Hash >> C::Authentication::User
-C::Authentication::User >> Class::Accessor::Fast
-C::Base >> C::Controller
-C::Component >> Class::Accessor::Fast Class::Data::Inheritable
-C::Controller::HTML::FormFu::Action::Form >>  C::Action
-C::Controller::HTML::FormFu::Action::FormConfig >>  C::Action
-C::Controller::HTML::FormFu::Action::FormMethod >>  C::Action
-C::Controller::HTML::FormFu::Action::MultiForm >>  C::Action
-C::Controller::HTML::FormFu::Action::MultiFormConfig >>  C::Action
-C::Controller::HTML::FormFu::Action::MultiFormMethod >>  C::Action
-C::Controller >> C::Component C::AttrContainer Class::Accessor::Fast
-C::DispatchType::Chained >> C::DispatchType
-C::DispatchType::Default >> C::DispatchType
-C::DispatchType::Index >> C::DispatchType
-C::DispatchType::Path >> C::DispatchType
-C::DispatchType::Regex >> C::DispatchType::Path
-C::DispatchType >> Class::Accessor::Fast
-C::Dispatcher >> Class::Accessor::Fast
-C::Engine::Apache::MP13 >> C::Engine::Apache
-C::Engine::Apache >> C::Engine
-C::Engine::Apache2::MP19 >> C::Engine::Apache2
-C::Engine::Apache2::MP20 >> C::Engine::Apache2
-C::Engine::Apache2 >> C::Engine::Apache
-C::Engine::CGI >> C::Engine
-C::Engine::FastCGI >> C::Engine::CGI
-C::Engine::HTTP::Restarter::Watcher >> Class::Accessor::Fast
-C::Engine::HTTP::Restarter >> C::Engine::HTTP
-C::Engine::HTTP >> C::Engine::CGI
-C::Engine >> Class::Accessor::Fast
-C::Helper::Model::DBIC::Schema >> DBIx::Class::Schema::Loader
-C::Helper::View::CSS::Minifier::XS >> C::View::CSS::Minifier::XS
-C::Helper::View::CSS::Squish >> C::View::CSS::Squish
-C::Helper::View::JavaScript::Minifier::XS >> C::View::JavaScript::Minifier::XS
-C::Helper::View::TT >> C::View::TT
-C::Helper::View::TTSite >> C::View::TT
-C::Helper >> Class::Accessor::Fast
-C::Log >> Class::Accessor::Fast
-C::Model::DBIC::Schema >> C::Model Class::Accessor::Fast Class::Data::Accessor
-C::Model >> C::Component
-C::Plugin::Authentication::User::Hash >> C::Authentication::User::Hash
-C::Plugin::Authentication::User >> C::Authentication::User
-C::Plugin::Authentication >> Class::Accessor::Fast Class::Data::Inheritable
-C::Plugin::Authorization::ACL::Engine >> Class::Accessor::Fast Exporter
-C::Plugin::Authorization::ACL >> Class::Data::Inheritable
-C::Plugin::Session::State::Cookie >> C::Plugin::Session::State Class::Accessor::Fast
-C::Plugin::Session::State::URI >> C::Plugin::Session::State Class::Accessor::Fast
-C::Plugin::Session::Store::Dummy >> C::Plugin::Session::Store
-C::Plugin::Session::Store::File >>  Class::Data::Inheritable, C::Plugin::Session::Store
-C::Plugin::Session >> Class::Accessor::Fast
-C::Plugin::StackTrace >> Class::Accessor::Fast
-C::Plugin::Static::Simple >> Class::Accessor::Fast, Class::Data::Inheritable
-C::Request::Upload >> Class::Accessor::Fast
-C::Request >> Class::Accessor::Fast
-C::Response >> Class::Accessor::Fast
-C::View::CSS::Minifier::XS >> C::View
-C::View::CSS::Squish >> C::View
-C::View::JavaScript::Minifier::XS >> C::View
-C::View::TT >> C::View
-C::View >> C::Component
