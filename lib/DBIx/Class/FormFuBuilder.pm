@@ -2,7 +2,7 @@ package DBIx::Class::FormFuBuilder;
 use strict;
 use warnings;
 
-# use base 'DBIx::Class';
+our $VERSION = '0.00';
 
 =head1 NAME
 
@@ -15,6 +15,37 @@ DBIx::Class::FormFuBuilder
     ...
     DBIx::Class->load_components('FormFuBuilder');
     
+    
+    ### TODO: implement this but rethink about it before
+    ### TODO: does it make sense to allow code-refs instead of {} 
+    ###       in order to decide? varchar(10) <-> varchar(40) <-> varchar(255)
+    ###       nullable date <-> not-nullable date (+/- null checkbox)
+    ### TODO: do we have different type-names for each database?
+    ### TODO: or do this in the model class -- which is better?
+    ### TODO: think about callbacks for eg. include JavaScript, CSS, ...
+    # inside your Schema class (optionally):
+    package DemoApp::Schema;
+    ...
+    # defaults for entire forms
+    __PACKAGE__->form_fu_default({
+        ... # standard form definitions like CSS, ...
+    });
+    
+    # defaults for a named relation -- does this make sense? -- are names really unique?
+    __PACKAGE__->form_fu_default(-sizes => {
+        ... # meaningful defaults for relation 'sizes'
+    });
+    
+    # defaults for 'integer'
+    __PACKAGE__->form_fu_default(integer => {
+        ... # meaningful defaults for 'integer' fields
+    });
+    
+    # defaults for 'varchar' -- could 'character_varying' make sense???
+    __PACKAGE__->form_fu_default('character varying' => {
+        ### how to handle eg. size ???
+    });
+    ### end of TODO
     
     # inside your result classes do this:
     package DemoApp::Schema::Result::Product;
@@ -33,6 +64,27 @@ more examples to come!
 =head1 METHODS
 
 =cut
+
+=head2 form_fu_default
+
+TODO...
+
+=cut
+
+sub form_fu_default {
+    my $self = shift;
+    
+    return if (!@_);
+    if (!ref($_[0])) {
+        # default for a field // or a named relation
+        
+        ### TODO: implement this
+    } elsif (ref($_[0]) eq 'HASHREF') {
+        # general form default...
+        
+        ### TODO: implement this
+    }
+}
 
 =head2 form_fu_extras
 
@@ -57,7 +109,7 @@ meaningful things could be:
 sub form_fu_extra {
     my $self = shift;
     my $column_name = shift;
-    my $args = ref($_[0]) eq 'HASH' ? shift : { @_ };
+    my $args = ref($_[0]) eq 'HASH' ? $_[0] : { @_ };
     
     $self->column_info($column_name)->{extras}->{formfu} = $args;
 }
@@ -98,16 +150,20 @@ this is an additional element-array inserted at the end of the form
 
 sub generate_form_fu {
     my $rs = shift;
-    my %args = ref($_[0]) eq 'HASH' ? %{$_[0]} : @_;
+    my %args = ( ref($_[0]) eq 'HASH' ? %{$_[0]} : @_ );
     
-    die 'only usable on classes derieved from "DBIx::Class::ResultSet"'
+    die 'only usable on classes derived from "DBIx::Class::ResultSet"'
         unless $rs->isa('DBIx::Class::ResultSet');
-    
+        
     my $result_source = $rs->result_source;
     my $cols = join(', ', $result_source->columns);
     
+    ### TODO: is there a way to avoid this bad back???
+    ### fire this query would be a solution but takes time :-(
+    my $dummy = $rs->_resolved_attrs;
+    
     ### FIXME: stringification has a strange side-effect.
-    warn "calling generate_form_fu with $rs / class=$result_source, cols=$cols";
+    # warn "calling generate_form_fu with $rs / class=$result_source, cols=$cols";
     
     #
     # build form scaffolding merging singular things into plural...
@@ -169,7 +225,7 @@ sub _add_elements {
     my $alias = shift;
     my @columns = @_;
     
-    warn "add elements: @columns...";
+    # warn "add elements: @columns...";
     
     #
     # add hidden ID for primary columns
@@ -241,7 +297,7 @@ sub _add_elements {
         );
         if (exists($info->{extras}->{formfu})) {
             # poor man's deep copy...
-            foreach my $key (%{$info->{extras}->{formfu}}) {
+            foreach my $key (keys %{$info->{extras}->{formfu}}) {
                 my $value = $info->{extras}->{formfu}->{$key};
                 if (!ref($value)) {
                     $field{$key} = $value;
