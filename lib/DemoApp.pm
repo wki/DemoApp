@@ -14,10 +14,10 @@ use Catalyst::Runtime '5.80';
 #                 directory
 
 no warnings; # comma's would warn otherwise...
-use Catalyst qw(-Debug
-                -Log=warn,fatal,error,debug,info
-                -Stats=1
-                ConfigLoader
+# use Catalyst qw(-Debug
+#                 -Log=warn,fatal,error,debug,info
+#                 -Stats=1
+use Catalyst qw(ConfigLoader
                 Static::Simple
                 
                 Authentication
