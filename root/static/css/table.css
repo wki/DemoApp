@@ -1,0 +1,64 @@
+/* table.css */
+
+table.list {
+    width: 600px;
+    border-collapse: collapse;
+    /* border: 1px solid black; */
+    -webkit-box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+table.list thead tr {
+    background-color: #333333;
+    height: 24px;
+}
+
+table.list thead tr th {
+    font-weight: bold;
+    text-align: left;
+    color: #ffffff;
+    padding: 4px;
+}
+
+table.list thead tr th ~ th {
+    border-left: 1px dotted white;
+    
+}
+
+table.list thead tr th.sortasc:after {
+    content: "▲";
+    float: right;
+    position: relative;
+    font-size: 14px;
+    line-height: 0px;
+    /* width: 0px; */
+    left: -10px;
+    top: 7px;
+}
+
+table.list thead tr th.sortdesc:after {
+    content: "▼";
+    float: right;
+    position: relative;
+    font-size: 14px;
+    line-height: 0px;
+    /* width: 0px; */
+    left: -10px;
+    top: 7px;
+}
+
+table.list tbody tr {
+    background-color: #eeeeee;
+}
+
+table.list tbody tr:nth-child(2n) {
+    background-color: #dddddd;
+}
+
+table.list tbody td {
+    padding: 4px;
+}
+
+table.list tbody tr td ~ td {
+    border-left: 1px dotted black;
+    
+}
