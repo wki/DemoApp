@@ -50,8 +50,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-09 23:00:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HVqY5NoyOFU3JpeqJyHcmQ
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-10 11:52:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:z9Rr9bTWjh9uCFd4CLnqkg
 
 #
 # patch above 'belongs_to' relation!

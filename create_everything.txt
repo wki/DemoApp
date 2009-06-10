@@ -51,6 +51,11 @@ CREATE TABLE person_role (
     PRIMARY KEY (person, role)
 );
 
+alter table person
+    add column valid_from date,
+    add column valid_until date;
+
+
 
 $ ./script/demoapp_create.pl model DB DBIC::Schema DemoApp::Schema create=static dbi:Pg:dbname=demoapp postgres ''
 

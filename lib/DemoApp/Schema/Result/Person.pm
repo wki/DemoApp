@@ -50,6 +50,10 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
     size => 1,
   },
+  "valid_from",
+  { data_type => "date", default_value => undef, is_nullable => 1, size => 4 },
+  "valid_until",
+  { data_type => "date", default_value => undef, is_nullable => 1, size => 4 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("person_login_key", ["login"]);
@@ -61,8 +65,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-09 23:00:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tb79rqky0kUM9ZFI3BgkOA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-10 11:52:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jEcxN3TnIT1u2X/l7USM8w
 
 __PACKAGE__->many_to_many('roles', 'person_roles', 'role');
 

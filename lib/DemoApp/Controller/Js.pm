@@ -17,11 +17,12 @@ __PACKAGE__->config(
     #   specify dependencies (without file extensions)
     depend => {
         scriptaculous => 'prototype',
+        tablekit      => 'prototype',
         builder       => 'scriptaculous',
         effects       => 'scriptaculous',
         dragdrop      => 'effects',
         slider        => 'scriptaculous',
-        default       => 'dragdrop',
+        default       => ['dragdrop', 'tablekit'],
     },
     #   will be guessed from extension
     # mimetype => 'application/javascript',

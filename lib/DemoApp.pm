@@ -13,7 +13,7 @@ use Catalyst::Runtime '5.80';
 # Static::Simple: will serve static files from the application's root
 #                 directory
 
-no warnings; # comma's would warn otherwise...
+# no warnings; # comma's would warn otherwise...
 # use Catalyst qw(-Debug
 #                 -Log=warn,fatal,error,debug,info
 #                 -Stats=1
@@ -61,10 +61,6 @@ __PACKAGE__->config(
                 store => {
                     class          => 'DBIx::Class',
                     user_model     => 'DB::Person',
-                    # role_relation  => 'Role',
-                    # role_field     => 'id',
-                    # role_relation  => 'roles',
-                    # role_field     => 'id',
                     role_relation  => 'DB::PersonRole',
                     role_field     => 'role',
                 },

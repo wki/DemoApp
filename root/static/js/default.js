@@ -33,7 +33,7 @@ var SiteUtil = Class.create({
         //
         // if we find a field marked '_focus' --> activate it with minimal delay
         //
-        this.focusField(Element.down(element, 'input[class=_focus]')).defer();
+        this.focusField.defer(Element.down(element, 'input[class=_focus]'));
     },
     
     //

@@ -8,31 +8,31 @@ my @nav = (
         display => 'home',
         c => 'Root',
         a => 'index',
-        uri => c->uri_for(c->controller('Root')->action_for('index')),
     },
     {
         display => 'products',
         c => 'Products',
         a => 'index',
-        uri => c->uri_for(c->controller('Products')->action_for('index')),
+    },
+    {
+        display => 'persons',
+        c => 'Persons',
+        a => 'index',
     },
     {
         display => 'test',
         c => 'Products',
         a => 'test',
-        uri => c->uri_for(c->controller('Products')->action_for('test')),
     },
     {
         display => 'explore',
         c => 'Explore',
         a => 'index',
-        uri => c->uri_for(c->controller('Explore')->action_for('index')),
     },
     {
         display => 'logout',
         c => 'Login',
         a => 'logout',
-        uri => c->uri_for(c->controller('Login')->action_for('logout')),
     },
 );
 
@@ -51,7 +51,8 @@ with {id => 'topnav'} ul {
     foreach my $navitem (@nav) {
         li {
             class 'active' if ($navitem == $active_item);
-            with {href => $navitem->{uri}} a { $navitem->{display} };
+            with {href => c->uri_for(c->controller($navitem->{c})->action_for($navitem->{a}))}
+                a { $navitem->{display} };
         };
     }
 };
