@@ -22,7 +22,7 @@ __PACKAGE__->config(
         effects       => 'scriptaculous',
         dragdrop      => 'effects',
         slider        => 'scriptaculous',
-        default       => ['dragdrop', 'tablekit'],
+        default       => ['dragdrop', 'tablekit', 'widgets'],
     },
     #   will be guessed from extension
     # mimetype => 'application/javascript',

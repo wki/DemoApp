@@ -5,48 +5,90 @@ standard utilities to control the entire site
 */
 
 //
-// the Site-Util master class...
+// Traverser is a singleton class
+// traverses parts of the DOM and enhances all class="_xxx" marked things
+// based on a lookup table that may get dynamically expanded
 //
-var Util = {};
-var SiteUtil = Class.create({
+var Traverser = new (Class.create({
     //
     // constructor
     //
-    initialize: function() {
-        this.prepareDOM(document);
+    initialize: function(){
+        this._lookup = {};
     },
-    
-    //
-    // prepare unobtrusive things under a given element
-    //
-    prepareDOM: function(element) {
-        if (!element) { element = document; }
-        
-        Element.select(element, 'form[class^=_update_]').each(function(e) {
-            new Util.FormUpdater(e);
-        });
 
-        Element.select(element, 'form[class^=_enhance]').each(function(e) {
-            new Util.FormEnhancer(e);
+    //
+    // prepare a part of the DOM tree
+    //
+    prepareDOM: function(e) {
+        e = e || document;
+        
+        // local copy to avoid context-switching (20-30% faster)
+        var lookup = this._lookup;
+
+        //
+        // find all tags that are of a class that starts with '_'
+        //
+        Element.select(e,'[class^="_"]').each(function(element) {
+            //
+            // go thru all classNames of this single tag
+            // that start with '_'
+            //
+            $w(element.className).grep(/^_/).each(function(classname) {
+                //
+                // split this name into nonempty junks divded by '_'
+                //
+                var parts    = classname.split(/_/).grep(/./);
+                var selector = parts.shift();
+
+                //
+                // try to make our object
+                // and silently ignore any errors
+                //
+                try {
+                    new lookup[selector](element, parts);
+                } catch (exception) {
+                    // alert(exception);
+                    // simply ignore the exception
+                }
+            });
         });
-     
-        //
-        // if we find a field marked '_focus' --> activate it with minimal delay
-        //
-        this.focusField.defer(Element.down(element, 'input[class=_focus]'));
     },
-    
+
     //
-    // helper: focus a field
+    // add a new selector
     //
-    focusField: function(f) {
-        if (f) f.focus();
+    add: function(selector, classname) {
+        this._lookup[selector] = classname;
     },
-    
+
     //
-    // last entry
+    // remove a lookup entry again
     //
-    _dummy: 0
+    remove: function(selector) {
+        delete this._lookup[selector];
+    }
+}))();
+
+//
+// the Util namespace
+//
+var Util = {};
+
+//
+// Util.FieldFocus -- focus a field
+//
+Util.FieldFocus = Class.create({
+    initialize: function(e) {
+        if (e.tagName.toUpperCase() != 'INPUT') return;
+        (function(f) {
+            try {
+                f.focus() 
+            } catch(e) {
+                // do nothing -- focus silently fails...
+            }
+        }).delay(0.5, e);
+    }
 });
 
 //
@@ -300,7 +342,18 @@ Util.FormUpdater = Class.create({
 //
 // initiate Utils
 //
-var siteutil;
+Traverser.add('update', Util.FormUpdater);
+Traverser.add('enhance', Util.FormEnhancer);
+Traverser.add('focus', Util.FieldFocus);
+
 document.observe('dom:loaded', function() {
-    siteutil = new SiteUtil();
+    Traverser.prepareDOM(document);
 });
+
+//
+// disable auto-loading of table-kit (slooooow on IE)
+//
+if (window['TableKit']) {
+    TableKit.options.autoLoad = false;
+}
+
