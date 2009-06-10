@@ -9,7 +9,6 @@ __PACKAGE__->config(
         'dbi:Pg:dbname=demoapp',
         'postgres',
         '',
-        
     ],
 );
 

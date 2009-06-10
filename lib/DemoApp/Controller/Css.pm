@@ -17,8 +17,9 @@ __PACKAGE__->config(
     #   specify dependencies (without file extensions)
     depend => {
         navigation => 'default',
-        form       => 'navigation',
-        site       => 'form',
+        form       => 'default',
+        table      => 'default',
+        site       => ['form', 'table', 'navigation'],
     },    #
     #   will be guessed from extension
     # mimetype => 'text/css',

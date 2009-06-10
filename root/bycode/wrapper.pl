@@ -6,7 +6,7 @@ doctype 'xhtml';
 html {
   head {
       title { stash->{title} || 'untitled' };
-      load Js  => qw(prototype scriptaculous effects dragdrop default.js);
+      load Js  => 'site.js';
       load Css => 'site.css';
       # load Js => 'dragdrop'; # will append to load Js above...
   };
