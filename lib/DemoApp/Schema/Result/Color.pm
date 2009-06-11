@@ -33,8 +33,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-10 11:52:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7FTuZjjblKIRxt6vbdicKw
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-11 20:52:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AdAFTAaK2/tBDpcDuAc7CQ
 
 __PACKAGE__->form_fu_extra(name => {
     constraints => 'Required',

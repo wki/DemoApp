@@ -55,6 +55,159 @@ alter table person
     add column valid_from date,
     add column valid_until date;
 
+CREATE TABLE hierarchy (
+    id serial NOT NULL PRIMARY KEY,
+    root integer not null,
+    name varchar(40) not null,
+    lft integer not null,
+    rgt integer not null
+);
+
+
+
+CREATE OR REPLACE FUNCTION before_hierarchy_insert() RETURNS TRIGGER AS $$
+DECLARE
+    guess_lft integer;
+BEGIN
+    --
+    -- correct lft if needed
+    --
+    SELECT coalesce(max(rgt), 0) + 1
+    INTO guess_lft
+    FROM hierarchy
+    WHERE root=NEW.root;
+    
+    IF NEW.lft IS NULL OR NEW.lft > guess_lft THEN
+        NEW.lft = guess_lft;
+    ELSIF NEW.lft <= 0 THEN
+        NEW.lft = 1;
+    END IF;
+    
+    --
+    -- set rgt for a leaf node
+    --
+    NEW.rgt = NEW.lft + 1;
+    
+    --
+    -- update all elements behind this one
+    --
+    UPDATE hierarchy
+    SET lft = lft + CASE WHEN lft >= NEW.lft THEN 2 ELSE 0 END,
+        rgt = rgt + CASE WHEN rgt >= NEW.lft THEN 2 ELSE 0 END
+    WHERE (lft >= NEW.lft OR rgt >= NEW.lft)
+      and root = NEW.root;
+    
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER before_hierarchy_insert ON hierarchy;
+CREATE TRIGGER before_hierarchy_insert BEFORE INSERT ON hierarchy
+  FOR EACH ROW EXECUTE PROCEDURE before_hierarchy_insert();
+
+
+
+CREATE OR REPLACE FUNCTION after_hierarchy_delete() RETURNS TRIGGER AS $$
+BEGIN
+    --
+    -- delete all child-nodes of the just-deleted
+    -- fires this trigger again for every row deleted
+    -- assuming that all triggers are run in sequence at the end of
+    -- the statement things will work fine.
+    --
+    DELETE FROM hierarchy
+    WHERE lft BETWEEN OLD.lft AND OLD.rgt
+      AND root = OLD.root;
+    
+    --
+    -- advance lft and right for right siblings or children
+    -- advancing occurs in steps of 2 to make recursion work for us
+    --
+    UPDATE hierarchy
+    SET lft = lft - CASE WHEN lft > OLD.lft THEN 2 ELSE 0 END,
+        rgt = rgt - CASE WHEN rgt > OLD.lft THEN 2 ELSE 0 END
+    WHERE (lft > OLD.lft OR rgt > OLD.lft)
+      AND root = OLD.root;
+    
+    RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER after_hierarchy_delete ON hierarchy;
+CREATE TRIGGER after_hierarchy_delete AFTER DELETE ON hierarchy
+  FOR EACH ROW EXECUTE PROCEDURE after_hierarchy_delete();
+
+
+
+CREATE OR REPLACE FUNCTION before_hierarchy_update() RETURNS TRIGGER AS $$
+DECLARE
+    guess_lft integer;
+    width integer;
+    delta integer;
+BEGIN
+    --
+    -- simple sanity check and test if we really must do something
+    -- recursion prevention: rgt must be NULL to let magic work...
+    --
+    IF (OLD.root != NEW.root) THEN
+        RAISE EXCEPTION 'cannot change root';
+    ELSIF (OLD.lft = NEW.lft OR NEW.rgt is not NULL) THEN
+        RETURN NEW;
+    END IF;
+    
+    SELECT coalesce(max(rgt), 0) + 1
+    INTO guess_lft
+    FROM hierarchy
+    WHERE root = NEW.root;
+    
+    IF NEW.lft IS NULL OR NEW.lft > guess_lft THEN
+        NEW.lft = guess_lft;
+    ELSIF NEW.lft <= 0 THEN
+        NEW.lft = 1;
+    END IF;
+    
+    IF NEW.lft BETWEEN OLD.lft AND OLD.rgt THEN
+        RAISE EXCEPTION 'lft may not be between OLD.lft and OLD.rgt!';
+    END IF;
+    
+    IF (OLD.lft = NEW.lft) THEN
+        RETURN NEW;
+    END IF;
+    
+    --
+    -- set some values, and properly set rgt
+    --
+    width := OLD.rgt - OLD.lft + 1;
+    delta := NEW.lft - OLD.lft;
+    
+    NEW.rgt := NEW.lft + width - 1;
+    
+    --
+    -- update just-moved and pushed-away records
+    --
+    UPDATE hierarchy
+    SET lft = lft + CASE WHEN lft BETWEEN OLD.lft AND OLD.rgt THEN delta
+                         WHEN lft BETWEEN NEW.lft AND NEW.lft + width THEN width
+                         ELSE 0
+                    END,
+        rgt = rgt + CASE WHEN rgt BETWEEN OLD.lft AND OLD.rgt THEN delta
+                             WHEN rgt BETWEEN NEW.lft AND NEW.lft + width THEN width
+                             ELSE 0
+                        END
+    WHERE ((lft BETWEEN OLD.lft AND OLD.rgt) OR
+           (rgt BETWEEN OLD.lft AND OLD.rgt) OR
+           (lft BETWEEN NEW.lft AND NEW.lft + width) OR
+           (rgt BETWEEN NEW.lft AND NEW.lft + width))
+      AND root = NEW.root;
+          
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER before_hierarchy_update ON hierarchy;
+CREATE TRIGGER before_hierarchy_update BEFORE UPDATE ON hierarchy
+  FOR EACH ROW EXECUTE PROCEDURE before_hierarchy_update();
+
 
 
 $ ./script/demoapp_create.pl model DB DBIC::Schema DemoApp::Schema create=static dbi:Pg:dbname=demoapp postgres ''

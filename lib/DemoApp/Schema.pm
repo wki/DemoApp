@@ -8,8 +8,8 @@ use base 'DBIx::Class::Schema';
 __PACKAGE__->load_namespaces;
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-10 11:52:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wKsJ0sDvtrOXvkyoH/HKiQ
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-11 20:52:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qY/IifFyt2sQmuzVI6ekaw
 
 #
 # all resultset classes inherit this one

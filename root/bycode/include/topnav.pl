@@ -20,6 +20,11 @@ my @nav = (
         a => 'index',
     },
     {
+        display => 'hierarchy',
+        c => 'Hierarchy',
+        a => 'index',
+    },
+    {
         display => 'test',
         c => 'Products',
         a => 'test',

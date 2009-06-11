@@ -28,8 +28,8 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-10 11:52:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:66vueHNmFp/EAZZIPZeswA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-11 20:52:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I+4bCcM5PaIrg03DgPhQYw
 
 
 1;
