@@ -45,6 +45,16 @@ __PACKAGE__->add_unique_constraint("hierarchy_pkey", ["id"]);
 # GROUP BY n.lft
 # ORDER BY n.lft;
 
+# stolen from github.com/melo/dbix--class--tree--nestedset
+# $class->has_many(
+#     $args->{children_rel} => $class,
+#     \%join_cond,
+#     { where    => \"me.$left > parent.$left AND me.$right < parent.$right",
+#       order_by =>  "me.$left",
+#       from     =>  "$table me, $table parent" },
+# );
+
+
 __PACKAGE__->has_one(
   "parent",
   "DemoApp::Schema::Result::Hierarchy",
