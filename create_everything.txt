@@ -209,6 +209,16 @@ CREATE TRIGGER before_hierarchy_update BEFORE UPDATE ON hierarchy
   FOR EACH ROW EXECUTE PROCEDURE before_hierarchy_update();
 
 
+DROP VIEW hierarchy_view;
+CREATE VIEW hierarchy_view as
+SELECT n.*,
+       COUNT(*)-1 AS level
+FROM hierarchy AS n,
+     hierarchy AS p
+WHERE n.lft BETWEEN p.lft AND p.rgt
+GROUP BY n.lft, n.rgt, n.name, n.id, n.root
+ORDER BY n.lft;
+
 
 $ ./script/demoapp_create.pl model DB DBIC::Schema DemoApp::Schema create=static dbi:Pg:dbname=demoapp postgres ''
 
