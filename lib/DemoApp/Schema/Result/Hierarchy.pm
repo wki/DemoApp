@@ -45,20 +45,23 @@ __PACKAGE__->add_unique_constraint("hierarchy_pkey", ["id"]);
 # GROUP BY n.lft
 # ORDER BY n.lft;
 
-# stolen from github.com/melo/dbix--class--tree--nestedset
-# $class->has_many(
-#     $args->{children_rel} => $class,
-#     \%join_cond,
-#     { where    => \"me.$left > parent.$left AND me.$right < parent.$right",
-#       order_by =>  "me.$left",
-#       from     =>  "$table me, $table parent" },
+# # stolen from github.com/melo/dbix--class--tree--nestedset
+# # from, where do not get into SQL...
+# __PACKAGE__->has_many(
+#     parent => 'DemoApp::Schema::Result::Hierarchy',
+#     { 'foreign.root' => 'self.root' },
+#     { 
+#         from     =>  'hierarchy me, hierarchy parent',
+#         where    => \'me.lft > parent.lft AND me.rgt < parent.rgt',
+#         order_by =>  'me.lft',
+#         group_by => ['me.lft', 'me.id', 'me.name'],
+#     },
 # );
 
-
 __PACKAGE__->has_one(
-  "parent",
-  "DemoApp::Schema::Result::Hierarchy",
-  { 'foreign.root' => 'self.root' }
+  parent => 'DemoApp::Schema::Result::Hierarchy',
+  { 'foreign.root' => 'self.root' },
+  { where => \'1=1' }
 );
 
 1;

@@ -38,7 +38,7 @@ sub index :Path :Args(0) {
                                               columns => [qw(id name)],
                                               join => 'parent',
                                               '+select' => [ \'count(*)-1' ],
-                                              '+as' => ['level'],
+                                              '+as' => [ 'level' ],
                                               group_by => ['me.lft', 'me.id', 'me.name'],
                                               order_by => 'me.lft',
                                           })
