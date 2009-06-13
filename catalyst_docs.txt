@@ -202,6 +202,35 @@ III - DBIx::Class
                            { id => "color" }, 
                            { join_type => 'left' });
 
+ - $rs->search( [ ...OR... ] | { ...AND... } );
+     result: $rs (scalar context), @rows (list context)
+   
+ - search-options:
+     +...
+       : zusätzlich
+     order_by => 'col' | [cols] | {-asc|-desc => 'col'|[cols]}
+     group_by => [cols]
+     having => {cond} | [cond] | \'cond'
+     where => {cond} | [cond] | \'cond'
+       : Beispiel: [Schema::Result::Xxx]
+         __PACKAGE__->resultset_attributes({where => ...})
+     (+)columns => qw(...)
+       : genau diese Spalten
+     (+)select => [ 'col' | \'col as alias' | {function => 'col'} ]
+       : Spalten oder (Aggregat)-Funktionen
+     (+)as => [ 'col' ]
+       : Accessor-Namen (nicht im SQL!)
+     join => 'relation' | {rel1 => rel2} | [rel1, ...]
+       : joins
+     prefetch => 'relation' | {rel1 => rel2} | [rel1, ...]
+       : wie join, ignoriert: join, select
+     page => n
+     rows => n
+     offset => n
+     distinct => 0|1
+     from => \'... complete from thing' | [...]
+     for => 'update' | 'shared'
+ 
 
 HTML::FormFu things
 -------------------

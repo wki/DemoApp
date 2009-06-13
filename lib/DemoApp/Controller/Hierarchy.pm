@@ -29,19 +29,6 @@ sub index :Path :Args(0) {
 
     # retrieve the structure in traversal-order
     $c->stash->{hierarchy} = [ $c->model('DB::Hierarchy')
-                                 ->search({
-                                             'me.root' => 1,
-                                             'parent.lft' => { '<=', \'me.lft' },
-                                             'parent.rgt' => { '>=', \'me.lft' },
-                                          },
-                                          {
-                                              columns => [qw(id name)],
-                                              join => 'parent',
-                                              '+select' => [ \'count(*)-1' ],
-                                              '+as' => [ 'level' ],
-                                              group_by => ['me.lft', 'me.id', 'me.name'],
-                                              order_by => 'me.lft',
-                                          })
                                  ->all() ];
 }
 

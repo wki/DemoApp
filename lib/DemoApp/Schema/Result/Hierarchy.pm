@@ -61,7 +61,22 @@ __PACKAGE__->add_unique_constraint("hierarchy_pkey", ["id"]);
 __PACKAGE__->has_one(
   parent => 'DemoApp::Schema::Result::Hierarchy',
   { 'foreign.root' => 'self.root' },
-  { where => \'1=1' }
+  # { where => \'1=1' }
 );
+
+__PACKAGE__->resultset_attributes({
+    where => {
+        'parent.lft' => { '<=', \'me.lft' },
+        'parent.rgt' => { '>=', \'me.lft' },
+    },
+    columns => [qw(id name)],
+    # join => 'parent',
+    from => \'hierarchy me, hierarchy parent',
+    '+select' => [ \'count(*)-1' ],
+    '+as' => [ 'level' ],
+    group_by => ['me.lft', 'me.id', 'me.name'],
+    order_by => 'me.lft',
+});
+
 
 1;
