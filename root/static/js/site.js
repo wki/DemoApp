@@ -357,12 +357,30 @@ Util.TableSort = Class.create({
 });
 
 //
+// a drag and drop hierarchy
+//
+Util.Hierarchy = Class.create({
+    initialize: function(e) {
+        this._container = $(e);
+        this._container.observe('click', this.onClick.bindAsEventListener(this));
+    },
+    
+    onClick: function(e) {
+        if (e.target.tagName.toUpperCase() != 'LI') return;
+        
+        Element.toggleClassName(e.target, 'expanded');
+        e.stop();
+    }
+});
+
+//
 // initiate Utils
 //
-Traverser.add('update',   Util.FormUpdater);
-Traverser.add('enhance',  Util.FormEnhancer);
-Traverser.add('focus',    Util.FieldFocus);
-Traverser.add('sortable', Util.TableSort);
+Traverser.add('update',    Util.FormUpdater);
+Traverser.add('enhance',   Util.FormEnhancer);
+Traverser.add('focus',     Util.FieldFocus);
+Traverser.add('sortable',  Util.TableSort);
+Traverser.add('hierarchy', Util.Hierarchy);
 
 document.observe('dom:loaded', function() {
     Traverser.prepareDOM(document);

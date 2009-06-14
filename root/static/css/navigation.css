@@ -84,3 +84,59 @@ ul#topnav li.active a:hover:after,
 ul#topnav li.active a:after {
   display: none;
 }
+
+/* dragable hierarchical left navigation */
+#hierarchy ul {
+    margin: 0px 0px 0px 25px;
+    padding: 0px;
+    border: none;
+}
+
+#hierarchy ul li {
+    list-style-type: none;
+    margin-bottom: 2px;
+    border-bottom: none;
+}
+
+#hierarchy ul li.dropzone {
+    border-bottom: none;
+    margin-bottom: 4px;
+    cursor: default;
+}
+
+#hierarchy.dragging ul li.dropzone {
+    border-bottom: 4px solid #cccccc;
+    margin-bottom: 0px;
+    cursor: default;
+}
+
+#hierarchy.dragging ul li.dropzone:hover {
+    border-bottom: 4px solid #000000;
+}
+
+#hierarchy ul li.draggable {
+    cursor: pointer;
+    position: relative;
+}
+
+#hierarchy ul li.draggable.expanded {
+}
+
+#hierarchy ul li.draggable:before {
+    content: "▶";
+    position: absolute;
+    top: 0px;
+    left: -15px;
+}
+
+#hierarchy ul li.draggable.expanded:before {
+    content: "▼";
+}
+
+#hierarchy ul li.draggable > ul {
+    display: none;
+}
+
+#hierarchy ul li.draggable.expanded > ul {
+    display: block;
+}

@@ -57,7 +57,6 @@ alter table person
 
 CREATE TABLE hierarchy (
     id serial NOT NULL PRIMARY KEY,
-    root integer not null,
     name varchar(40) not null,
     lft integer not null,
     rgt integer not null
@@ -74,8 +73,7 @@ BEGIN
     --
     SELECT coalesce(max(rgt), 0) + 1
     INTO guess_lft
-    FROM hierarchy
-    WHERE root=NEW.root;
+    FROM hierarchy;
     
     IF NEW.lft IS NULL OR NEW.lft > guess_lft THEN
         NEW.lft = guess_lft;
@@ -94,8 +92,7 @@ BEGIN
     UPDATE hierarchy
     SET lft = lft + CASE WHEN lft >= NEW.lft THEN 2 ELSE 0 END,
         rgt = rgt + CASE WHEN rgt >= NEW.lft THEN 2 ELSE 0 END
-    WHERE (lft >= NEW.lft OR rgt >= NEW.lft)
-      and root = NEW.root;
+    WHERE lft >= NEW.lft OR rgt >= NEW.lft;
     
     RETURN NEW;
 END
@@ -116,8 +113,7 @@ BEGIN
     -- the statement things will work fine.
     --
     DELETE FROM hierarchy
-    WHERE lft BETWEEN OLD.lft AND OLD.rgt
-      AND root = OLD.root;
+    WHERE lft BETWEEN OLD.lft AND OLD.rgt;
     
     --
     -- advance lft and right for right siblings or children
@@ -126,8 +122,7 @@ BEGIN
     UPDATE hierarchy
     SET lft = lft - CASE WHEN lft > OLD.lft THEN 2 ELSE 0 END,
         rgt = rgt - CASE WHEN rgt > OLD.lft THEN 2 ELSE 0 END
-    WHERE (lft > OLD.lft OR rgt > OLD.lft)
-      AND root = OLD.root;
+    WHERE lft > OLD.lft OR rgt > OLD.lft;
     
     RETURN NULL;
 END
@@ -149,16 +144,13 @@ BEGIN
     -- simple sanity check and test if we really must do something
     -- recursion prevention: rgt must be NULL to let magic work...
     --
-    IF (OLD.root != NEW.root) THEN
-        RAISE EXCEPTION 'cannot change root';
-    ELSIF (OLD.lft = NEW.lft OR NEW.rgt is not NULL) THEN
+    IF (OLD.lft = NEW.lft OR NEW.rgt is not NULL) THEN
         RETURN NEW;
     END IF;
     
     SELECT coalesce(max(rgt), 0) + 1
     INTO guess_lft
-    FROM hierarchy
-    WHERE root = NEW.root;
+    FROM hierarchy;
     
     IF NEW.lft IS NULL OR NEW.lft > guess_lft THEN
         NEW.lft = guess_lft;
@@ -194,11 +186,10 @@ BEGIN
                              WHEN rgt BETWEEN NEW.lft AND NEW.lft + width THEN width
                              ELSE 0
                         END
-    WHERE ((lft BETWEEN OLD.lft AND OLD.rgt) OR
-           (rgt BETWEEN OLD.lft AND OLD.rgt) OR
-           (lft BETWEEN NEW.lft AND NEW.lft + width) OR
-           (rgt BETWEEN NEW.lft AND NEW.lft + width))
-      AND root = NEW.root;
+    WHERE (lft BETWEEN OLD.lft AND OLD.rgt) OR
+          (rgt BETWEEN OLD.lft AND OLD.rgt) OR
+          (lft BETWEEN NEW.lft AND NEW.lft + width) OR
+          (rgt BETWEEN NEW.lft AND NEW.lft + width);
           
     RETURN NEW;
 END
@@ -208,16 +199,6 @@ DROP TRIGGER before_hierarchy_update ON hierarchy;
 CREATE TRIGGER before_hierarchy_update BEFORE UPDATE ON hierarchy
   FOR EACH ROW EXECUTE PROCEDURE before_hierarchy_update();
 
-
-DROP VIEW hierarchy_view;
-CREATE VIEW hierarchy_view as
-SELECT n.*,
-       COUNT(*)-1 AS level
-FROM hierarchy AS n,
-     hierarchy AS p
-WHERE n.lft BETWEEN p.lft AND p.rgt
-GROUP BY n.lft, n.rgt, n.name, n.id, n.root
-ORDER BY n.lft;
 
 
 $ ./script/demoapp_create.pl model DB DBIC::Schema DemoApp::Schema create=static dbi:Pg:dbname=demoapp postgres ''

@@ -25,11 +25,41 @@ __PACKAGE__->belongs_to(
   "DemoApp::Schema::Result::Person",
   { id => "person" },
 );
+__PACKAGE__->belongs_to(
+  "person",
+  "DemoApp::Schema::Result::Person",
+  { id => "person" },
+);
+__PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
+__PACKAGE__->belongs_to(
+  "person",
+  "DemoApp::Schema::Result::Person",
+  { id => "person" },
+);
+__PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
+__PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
+__PACKAGE__->belongs_to(
+  "person",
+  "DemoApp::Schema::Result::Person",
+  { id => "person" },
+);
+__PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
+__PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
+__PACKAGE__->belongs_to(
+  "person",
+  "DemoApp::Schema::Result::Person",
+  { id => "person" },
+);
+__PACKAGE__->belongs_to(
+  "person",
+  "DemoApp::Schema::Result::Person",
+  { id => "person" },
+);
 __PACKAGE__->belongs_to("role", "DemoApp::Schema::Result::Role", { id => "role" });
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-11 20:52:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I+4bCcM5PaIrg03DgPhQYw
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-14 18:38:32
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y9cdaKxCKXUILUbhJmZPdw
 
 
 1;
