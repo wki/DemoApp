@@ -135,6 +135,19 @@ sub detail :Chained('ajax') :Args(1) {
     $c->forward('show');
 }
 
+=head2 uritest
+
+just a dummy sample page to test various ways to gerate a uri
+
+=cut
+
+sub uritest :Local {
+    my $self = shift;
+    my $c = shift;
+    
+    # nothing inside, just let the template do its work.
+}
+
 =head1 AUTHOR
 
 Wolfgang Kinkeldei

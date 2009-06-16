@@ -54,11 +54,18 @@ table.list tbody tr:nth-child(2n) {
     background-color: #dddddd;
 }
 
+table.list tbody tr.lined {
+    border-bottom: 1px solid black;
+}
+
+table.list tbody tr.lined.thick {
+    border-bottom: 3px solid black;
+}
+
 table.list tbody td {
     padding: 4px;
 }
 
 table.list tbody tr td ~ td {
     border-left: 1px dotted black;
-    
 }

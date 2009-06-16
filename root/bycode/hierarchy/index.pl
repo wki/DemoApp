@@ -23,7 +23,7 @@ sub hierarchy_level {
                     
                     shift @{$hierarchy}; # drop this value
 
-                    if (scalar(@{$hierarchy}) && $hierarchy->[0]->get_column('level') > $level) {
+                    if (scalar(@{$hierarchy}) && $hierarchy->[0]->level > $level) {
                         hierarchy_level($hierarchy);
                     }
                     '';
