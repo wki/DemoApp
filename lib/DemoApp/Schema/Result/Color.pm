@@ -27,39 +27,14 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("color_pkey", ["id"]);
 __PACKAGE__->add_unique_constraint("color_name_key", ["name"]);
 __PACKAGE__->has_many(
-  "product_colors",
-  "DemoApp::Schema::Result::Product",
-  { "foreign.color" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "product_colors",
-  "DemoApp::Schema::Result::Product",
-  { "foreign.color" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "product_colors",
-  "DemoApp::Schema::Result::Product",
-  { "foreign.color" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "product_colors",
-  "DemoApp::Schema::Result::Product",
-  { "foreign.color" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "product_colors",
-  "DemoApp::Schema::Result::Product",
-  { "foreign.color" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "product_colors",
+  "products",
   "DemoApp::Schema::Result::Product",
   { "foreign.color" => "self.id" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-14 18:38:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:V4tYSGLgmZBaYZE7Nb6L9Q
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-16 07:57:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KijSh6aMp58DfWWdsV3DqQ
 
 __PACKAGE__->form_fu_extra(name => {
     constraints => 'Required',

@@ -7,8 +7,8 @@ sub RUN {
     
     my $product = stash->{product};
     div {
-        div { 'No: '    . $product->product_nr };
-        div { 'Name: '  . $product->product_name };
+        div { 'No: '    . $product->nr };
+        div { 'Name: '  . $product->name };
         div { 'Price: ' . $product->price };
         br;
     };

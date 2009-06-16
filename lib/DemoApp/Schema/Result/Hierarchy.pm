@@ -15,6 +15,8 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
     size => 4,
   },
+  "root",
+  { data_type => "integer", default_value => undef, is_nullable => 0, size => 4 },
   "name",
   {
     data_type => "character varying",
@@ -31,8 +33,8 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("hierarchy_pkey", ["id"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-14 18:38:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a5eFRAiLxqkmqHdbVpga9A
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-16 07:57:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SqipHmPXsqhC3f24x1Bk8A
 
 #
 # modify the resulting SELECT statement

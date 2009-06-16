@@ -59,39 +59,14 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("person_login_key", ["login"]);
 __PACKAGE__->add_unique_constraint("person_pkey", ["id"]);
 __PACKAGE__->has_many(
-  "person_role_people",
-  "DemoApp::Schema::Result::PersonRole",
-  { "foreign.person" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "person_role_people",
-  "DemoApp::Schema::Result::PersonRole",
-  { "foreign.person" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "person_role_people",
-  "DemoApp::Schema::Result::PersonRole",
-  { "foreign.person" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "person_role_people",
-  "DemoApp::Schema::Result::PersonRole",
-  { "foreign.person" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "person_role_people",
-  "DemoApp::Schema::Result::PersonRole",
-  { "foreign.person" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "person_role_people",
+  "person_roles",
   "DemoApp::Schema::Result::PersonRole",
   { "foreign.person" => "self.id" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-14 18:38:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pQwU759K1zrPZneYlRxS0w
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-16 07:57:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:edFB2jCRKocJQtKJ5paJFQ
 
 __PACKAGE__->many_to_many('roles', 'person_roles', 'role');
 

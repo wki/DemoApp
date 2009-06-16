@@ -89,7 +89,7 @@ DemoApp - Catalyst based application
 
 =head1 DESCRIPTION
 
-[enter your description here]
+just a simple demo application
 
 =head1 METHODS
 
@@ -97,8 +97,19 @@ DemoApp - Catalyst based application
 
 =head2 uri_for
 
-the overloaded version expands Catalyst's C<uri_for> by allowing a component
-to generate the URI if it can do this
+the overloaded version expands Catalyst's C<uri_for> by allowing
+
+=over
+
+=item *
+
+a component to generate the URI if it can do this
+
+=item *
+
+using path-arguments like C<Controller::action_method> or C<::action_method>
+
+=back
 
 =cut
 
@@ -114,6 +125,13 @@ around uri_for => sub {
         #   believe me, it can do it!
         #
         return $c->component($path->class)->uri_for($c, $path, @args);
+    } elsif (!ref($path) && $path =~ m{\A ([A-Z]\w*)? :: (\w+) \z}xms) {
+        #
+        # looks like 'Controller::action' or '::action'
+        #
+        return $c->$orig($c->controller( $1 || () )
+                           ->action_for( $2 ), 
+                         @args);
     }
 
     return $c->$orig($path, @args);

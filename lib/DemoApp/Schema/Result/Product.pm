@@ -43,45 +43,15 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("product_pkey", ["id"]);
 __PACKAGE__->add_unique_constraint("product_nr_key", ["nr"]);
 __PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" });
-__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" });
-__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" });
-__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" });
-__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" });
-__PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color", { id => "color" });
 __PACKAGE__->has_many(
-  "size_products",
-  "DemoApp::Schema::Result::Size",
-  { "foreign.product" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "size_products",
-  "DemoApp::Schema::Result::Size",
-  { "foreign.product" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "size_products",
-  "DemoApp::Schema::Result::Size",
-  { "foreign.product" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "size_products",
-  "DemoApp::Schema::Result::Size",
-  { "foreign.product" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "size_products",
-  "DemoApp::Schema::Result::Size",
-  { "foreign.product" => "self.id" },
-);
-__PACKAGE__->has_many(
-  "size_products",
+  "sizes",
   "DemoApp::Schema::Result::Size",
   { "foreign.product" => "self.id" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-14 18:38:32
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uYJYtZjFx+U2Br4ehqr7mA
+# Created by DBIx::Class::Schema::Loader v0.04006 @ 2009-06-16 07:57:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kfU7v3KmVF4Bz2r5/hag+w
 
 #
 # patch above 'belongs_to' relation!

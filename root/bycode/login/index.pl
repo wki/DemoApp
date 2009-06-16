@@ -18,13 +18,15 @@ div {
     ul {
         li {
             print OUT 'I forgot my password. ';
-            with { href => c->uri_for(c->controller->action_for('forgot_password')) }
+            # with { href => c->uri_for(c->controller->action_for('forgot_password')) }
+            with { href => c->uri_for('Login::forgot_password') }
             a { 'help me' };
         };
         li {
             print OUT "I don't have a login.";
-            #with { href => c->uri_for(c->controller->action_for('register')) }
-            with { href => c->uri_for(c->action('register')) }
+            # with { href => c->uri_for(c->controller->action_for('register')) }
+            # with { href => c->uri_for(c->action('register')) }
+            with { href => c->uri_for('Login::register') }
             a { 'register' };
         };
     };

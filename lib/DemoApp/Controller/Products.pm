@@ -57,7 +57,7 @@ sub show :Local :Args(1) {
     # we must set this to make detail() below work...
     $c->stash->{template} = 'products/detail.pl';
     
-    $c->stash->{title} .= ' - ' . $c->stash->{product}->product_name;
+    $c->stash->{title} .= ' - ' . $c->stash->{product}->name;
 }
 
 =head2 edit
