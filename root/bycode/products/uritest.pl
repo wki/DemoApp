@@ -172,15 +172,27 @@ sub RUN {
             };
             trow {
                 tcol { 'valid construction relative path 2' };
+                tcol { q{c->uri_for_action('products')} };
+                tcol { '- dies -' };
+                tcol { '' };
+            };
+            trow {
+                tcol { 'valid construction relative path 3' };
                 tcol { q{c->uri_for_action('products/index')} };
                 tcol { c->uri_for_action('products/index') };
                 tcol { '' };
             };
             trow {
-                tcol { 'valid construction relative path 3' };
+                tcol { 'valid construction relative path 4' };
                 tcol { q{c->uri_for_action('products/detail')} };
                 tcol { c->uri_for_action('products/detail') };
                 tcol { 'action is chained' };
+            };
+            trow {
+                tcol { 'valid construction relative path 5' };
+                tcol { q{c->uri_for_action('login/logout')} };
+                tcol { c->uri_for_action('login/logout') };
+                tcol { 'action is global' };
             };
             trow {
                 tcol { 'valid construction relative too long path' };
@@ -211,6 +223,12 @@ sub RUN {
                 tcol { q{c->uri_for_action('/products/detail')} };
                 tcol { c->uri_for_action('/products/detail') };
                 tcol { 'action is chained' };
+            };
+            trow {
+                tcol { 'valid construction absolute path 3' };
+                tcol { q{c->uri_for_action('/login/logout')} };
+                tcol { c->uri_for_action('/login/logout') };
+                tcol { 'action is global' };
             };
             trow {
                 tcol { 'valid construction with parameters' };

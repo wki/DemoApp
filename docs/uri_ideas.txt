@@ -1,0 +1,40 @@
+Constructing valid URIs for Catalyst
+
+Perl is famous for its multiple ways to do things. So is Catalyst. Spying  other people's applications I found a wide range of URI-construction methods. All subsequent examples assume that a Controller named 'Products' and an Action method named 'detail' exists. All examples are shown for the Testserver.
+
+Hopefully, nobody will use hardcoded URIs like this:
+
+    '/products/detail'
+
+A pattern that can be found very often looks like this one:
+
+    $c->uri_for('/products/action')
+    # yields: 'http://localhost:3000/products/action'
+
+Should we complain this sort of URI-construction? Well, I personally think we should. Unexpected results could occur when using 'uri_for' in a way shown above.
+
+Typo errors will not fail, instead invalid URIs will be generated. Using a string as uri_for's first argument will simply pass it through.
+Adding or modifying attributes (think about :Chained) should lead to completely different URIs which will not be the case.
+
+Another promising pattern could lead to URI constructions like:
+
+    # jumping between the currently running Controller's actions
+    $c->uri_for($c->action('detail'))
+    # yields: 'http://localhost:3000/products/detail'
+
+    # specifying controller and method
+    $c->uri_for($c->controller('Products')->action_for('detail'))
+    # yields: 'http://localhost:3000/products/detail'
+
+Both kinds will mostly work. The first one generates wrong URIs for :Chained actions. The second one will correctly resolve :Chained actions as well. Both versions will not die in case of typo errors.
+
+Is there a way that will always work? Even in case of attribute changes? YES! Simply use:
+
+    $c->uri_for_action('producs/detail')
+    $c->uri_for_action('/producs/detail')
+    # both yield: 'http://localhost:3000/products/detail'
+
+It simply looks like a valid URI, but it will successfully rewrite the combination of Controller and Action into a valid and true URI that will lead your Visitors to exactly the Action method you thought of. Wrong parameters will die. No more typo-errors!
+
+To tell the truth, there is one disadvantage. The argument must contain the action method, otherwise it will fail.
+
