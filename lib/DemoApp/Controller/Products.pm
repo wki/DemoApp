@@ -19,6 +19,19 @@ Catalyst Controller.
 
 =cut
 
+sub iframe_base :Chained :PathPart('iframe') :CaptureArgs(0) {
+}
+
+sub iframe :Chained('iframe_base') :PathPrefix :CaptureArgs(0) {
+}
+
+sub thing :Chained('iframe') :Args(0) {
+    my $self = shift;
+    my $c  = shift;
+
+    # template will be:
+    # $c->stash->{template} = 'products/thing.pl';
+}
 
 =head2 index
 

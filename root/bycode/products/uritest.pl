@@ -195,6 +195,12 @@ sub RUN {
                 tcol { 'action is global' };
             };
             trow {
+                tcol { 'valid construction relative path 6' };
+                tcol { q{c->uri_for_action('products/thing')} };
+                tcol { c->uri_for_action('products/thing') };
+                tcol { 'action is chained' };
+            };
+            trow {
                 tcol { 'valid construction relative too long path' };
                 tcol { q{c->uri_for_action('products/index/test')} };
                 tcol { '- dies -' };
