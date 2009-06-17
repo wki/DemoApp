@@ -66,6 +66,11 @@ table.list tbody td {
     padding: 4px;
 }
 
+table.list tbody tr td.big {
+    padding-top: 10px;
+    font-size: 14px;
+}
+
 table.list tbody tr td ~ td {
     border-left: 1px dotted black;
 }

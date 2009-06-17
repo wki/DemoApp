@@ -1,5 +1,169 @@
 # products/uritest.pl
 
+#
+# summary of test-cases
+#
+our @uri_list = (
+    { block => 'uri_for relative',
+      sub   => 'uri_for',
+      uris  => [
+        { desc    => 'invalid relative',
+          args    => "'xxx'",
+          comment => 'should die' },
+        { desc    => '',
+          args    => "'../dummy/xxx'",
+          comment => 'should die' },
+        { desc    => 'valid relative',
+          args    => "'detail'",
+          comment => '' },
+        { desc    => '',
+          args    => "'../login/register'",
+          comment => '' },
+    ]},
+    { block => 'uri_for absolute',
+      sub   => 'uri_for',
+      uris  => [
+        { desc    => 'invalid absolute',
+          args    => "'/products/xxx'",
+          comment => 'should die' },
+        { desc    => 'valid absolute',
+          args    => "'/login/register'",
+          comment => '' },
+    ]},
+    { block => 'uri_for action()',
+      sub   => 'uri_for',
+      uris  => [
+        { desc    => 'invalid action',
+          args    => "c->action('dummy')",
+          comment => 'should die' },
+        { desc    => 'valid action',
+          args    => "c->action('show')",
+          comment => '' },
+        { desc    => 'valid chained action',
+          args    => "c->action('detail')",
+          comment => '' },
+    ]},
+    { block => 'uri_for controller()->action()',
+      sub   => 'uri_for',
+      uris  => [
+        { desc    => 'invalid',
+          args    => "c->controller('Products')->action_for('dummy')",
+          comment => 'should die' },
+        { desc    => 'valid',
+          args    => "c->controller('Products')->action_for('show')",
+          comment => '' },
+        { desc    => 'valid chained',
+          args    => "c->controller('Products')->action_for('detail')",
+          comment => '' },
+        { desc    => 'valid chained w/arg',
+          args    => ["c->controller('Products')->action_for('detail')",42],
+          comment => '' },
+    ]},
+    { block => 'uri_for_action',
+      sub   => 'uri_for_action',
+      uris  => [
+        { desc    => 'invalid absolute',
+          args    => "'/products/dummy'",
+          comment => '' },
+        { desc    => 'invalid relative',
+          args    => "'products/dummy'",
+          comment => '' },
+        { desc    => '',
+          args    => "'products'",
+          comment => '' },
+        { desc    => 'valid relative',
+          args    => "'index'",
+          comment => '' },
+        { desc    => '',
+          args    => "'products/index'",
+          comment => '' },
+        { desc    => 'valid relative chained',
+          args    => "'products/detail'",
+          comment => '' },
+        { desc    => 'valid global',
+          args    => "'login/logout'",
+          comment => '' },
+        { desc    => 'valid chained',
+          args    => "'products/thing'",
+          comment => '' },
+        { desc    => 'relative too long',
+          args    => "'products/index/test'",
+          comment => '' },
+        { desc    => 'relative w/ args',
+          args    => ["'products/detail'",42],
+          comment => '' },
+        { desc    => 'relative too long w/ args',
+          args    => ["'products/detail/xxx'",42],
+          comment => '' },
+        { desc    => 'absolute',
+          args    => "'/products/index'",
+          comment => '' },
+        { desc    => '',
+          args    => "'/products/detail'",
+          comment => '' },
+        { desc    => '',
+          args    => "'/products/thing'",
+          comment => '' },
+        { desc    => '',
+          args    => "'/login/logout'",
+          comment => '' },
+        { desc    => '',
+          args    => ["'/products/detail'",42],
+          comment => '' },
+      ],
+    },
+);
+
+#
+# generate a single row
+#
+sub make_row {
+    my $sub = shift;
+    my $uri = shift;
+    my $class = shift;
+        
+    trow {
+        class $class if ($class);
+        
+        my $args = join(',', (ref($uri->{args}) 
+                                 ? (@{$uri->{args}}) 
+                                 : ($uri->{args}) )
+                       );
+        my $code = "c->$sub($args)";
+        my $result = eval $code;
+        $result = '- dies -' if ($@);
+        
+        for ($uri->{desc}, $code, $result, $uri->{comment} || '') {
+            tcol { $_ };
+        }
+    };
+}
+
+#
+# construct an entire block
+#
+sub make_block {
+    my $block = shift;
+    
+    tbody {
+        trow {
+            with {colspan => 4, class => 'big'}
+            tcol {
+                b{ $block->{block} };
+            };
+        };
+        
+        my $i = 1;
+        foreach my $test (@{$block->{uris}}) {
+            my $class;
+            if ($i == scalar(@{$block->{uris}})) {
+                $class = 'lined'
+            }
+            make_row($block->{sub} || 'uri_for', $test, $class);
+            $i++;
+        }
+    };
+}
 
 sub RUN {
     h1 {'URI Test page'};
@@ -15,237 +179,7 @@ sub RUN {
             };
         };
         
-        tbody {
-            trow {
-                tcol { 'invalid relative path 1' };
-                tcol { q{c->uri_for('xxx')} };
-                tcol { c->uri_for('xxx') };
-                tcol { 'expecting to die' };
-            };
-            trow {
-                tcol { 'invalid relative path 2' };
-                tcol { q{c->uri_for('../dummy/xxx')} };
-                tcol { c->uri_for('../dummy/xxx') };
-                tcol { 'expecting to die' };
-            };
-            trow {
-                tcol { 'valid relative path 1' };
-                tcol { q{c->uri_for('detail')} };
-                tcol { c->uri_for('detail') };
-                tcol { '' };
-            };
-            trow {
-                class 'lined';
-                tcol { 'valid relative path 2' };
-                tcol { q{c->uri_for('../login/register')} };
-                tcol { c->uri_for('../login/register') };
-                tcol { '' };
-            };
-            
-            trow {
-                tcol { 'invalid absolute path' };
-                tcol { q{c->uri_for('/products/xxx')} };
-                tcol { c->uri_for('/products/xxx') };
-                tcol { 'expecting to die' };
-            };
-            trow {
-                class 'lined';
-                tcol { 'valid absolute path 2' };
-                tcol { q{c->uri_for('/login/register')} };
-                tcol { c->uri_for('/login/register') };
-                tcol { '' };
-            };
-            
-            trow {
-                tcol { 'invalid construction using "action"' };
-                tcol { q{c->uri_for(c->action('dummy'))} };
-                tcol { c->uri_for(c->action('dummy')) };
-                tcol { 'expecting to die' };
-            };
-            trow {
-                tcol { 'valid construction using "action"' };
-                tcol { q{c->uri_for(c->action('show'))} };
-                tcol { c->uri_for(c->action('show')) };
-                tcol { '' };
-            };
-            trow {
-                class 'lined';
-                tcol { 'valid construction using "action"' };
-                tcol { q{c->uri_for(c->action('detail'))} };
-                tcol { c->uri_for(c->action('detail')) };
-                tcol { 'wrong URI, action is chained' };
-            };
-
-            trow {
-                tcol { 'invalid construction using "action_for"' };
-                tcol { q{c->uri_for(c->controller->action_for('dummy'))} };
-                tcol { c->uri_for(c->controller('Products')->action_for('dummy')) };
-                tcol { 'not usable inside a View, wrong URI' };
-            };
-            trow {
-                tcol { 'valid construction using "action"' };
-                tcol { q{c->uri_for(c->controller->action_for('show'))} };
-                tcol { c->uri_for(c->controller('Products')->action_for('show')) };
-                tcol { 'not usable inside a View' };
-            };
-            trow {
-                class 'lined';
-                tcol { 'valid construction using "action"' };
-                tcol { q{c->uri_for(c->controller->action_for('detail'))} };
-                tcol { c->uri_for(c->controller('Products')->action_for('detail')) };
-                tcol { 'not usable inside a View' };
-            };
-            
-            trow {
-                tcol { 'invalid construction using "action_for"' };
-                tcol { q{c->uri_for(c->controller('Products')->action_for('dummy'))} };
-                tcol { c->uri_for(c->controller('Products')->action_for('dummy')) };
-                tcol { 'wrong URI' };
-            };
-            trow {
-                tcol { 'valid construction using "action"' };
-                tcol { q{c->uri_for(c->controller('Products')->action_for('detail'))} };
-                tcol { c->uri_for(c->controller('Products')->action_for('detail')) };
-                tcol { '' };
-            };
-            trow {
-                class 'lined thick';
-                tcol { 'valid construction using "action"' };
-                tcol { q{c->uri_for(c->controller('Products')->action_for('detail'),42)} };
-                tcol { c->uri_for(c->controller('Products')->action_for('detail'),42) };
-                tcol { '' };
-            };
-
-
-
-            trow {
-                tcol { 'invalid construction using a shortcut' };
-                tcol { q{c->uri_for('Products::dummy')} };
-                tcol { c->uri_for('Products::dummy') };
-                tcol { 'wrong URI' };
-            };
-            trow {
-                tcol { 'valid construction using a shortcut' };
-                tcol { q{c->uri_for('Products::show')} };
-                tcol { c->uri_for('Products::show') };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction using a shortcut' };
-                tcol { q{c->uri_for('Products::show',127)} };
-                tcol { c->uri_for('Products::show',127) };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction using a shortcut' };
-                tcol { q{c->uri_for('Products::detail')} };
-                tcol { c->uri_for('Products::detail') };
-                tcol { '' };
-            };
-            trow {
-                class 'lined thick';
-                tcol { 'valid construction using a shortcut' };
-                tcol { q{c->uri_for('Products::detail',42)} };
-                tcol { c->uri_for('Products::detail',42) };
-                tcol { '' };
-            };
-
-
-
-            trow {
-                tcol { 'invalid construction with absolute path' };
-                tcol { q{c->uri_for_action('/products/dummy')} };
-                tcol { '- dies -' };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'invalid construction with relative path' };
-                tcol { q{c->uri_for_action('products/dummy')} };
-                tcol { '- dies -' };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction relative path 1' };
-                tcol { q{c->uri_for_action('index')} };
-                tcol { c->uri_for_action('index') };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction relative path 2' };
-                tcol { q{c->uri_for_action('products')} };
-                tcol { '- dies -' };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction relative path 3' };
-                tcol { q{c->uri_for_action('products/index')} };
-                tcol { c->uri_for_action('products/index') };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction relative path 4' };
-                tcol { q{c->uri_for_action('products/detail')} };
-                tcol { c->uri_for_action('products/detail') };
-                tcol { 'action is chained' };
-            };
-            trow {
-                tcol { 'valid construction relative path 5' };
-                tcol { q{c->uri_for_action('login/logout')} };
-                tcol { c->uri_for_action('login/logout') };
-                tcol { 'action is global' };
-            };
-            trow {
-                tcol { 'valid construction relative path 6' };
-                tcol { q{c->uri_for_action('products/thing')} };
-                tcol { c->uri_for_action('products/thing') };
-                tcol { 'action is chained' };
-            };
-            trow {
-                tcol { 'valid construction relative too long path' };
-                tcol { q{c->uri_for_action('products/index/test')} };
-                tcol { '- dies -' };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction relative with params' };
-                tcol { q{c->uri_for_action('products/detail',42)} };
-                tcol { c->uri_for_action('products/detail',42) };
-                tcol { 'action is chained' };
-            };
-            trow {
-                tcol { 'valid construction relative too long with params' };
-                tcol { q{c->uri_for_action('products/detail/test',42)} };
-                tcol { '- dies -' };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction absolute path 1' };
-                tcol { q{c->uri_for_action('/products/index')} };
-                tcol { c->uri_for_action('/products/index') };
-                tcol { '' };
-            };
-            trow {
-                tcol { 'valid construction absolute path 2' };
-                tcol { q{c->uri_for_action('/products/detail')} };
-                tcol { c->uri_for_action('/products/detail') };
-                tcol { 'action is chained' };
-            };
-            trow {
-                tcol { 'valid construction absolute path 3' };
-                tcol { q{c->uri_for_action('/login/logout')} };
-                tcol { c->uri_for_action('/login/logout') };
-                tcol { 'action is global' };
-            };
-            trow {
-                tcol { 'valid construction with parameters' };
-                tcol { q{c->uri_for_action('/products/detail',42)} };
-                tcol { c->uri_for_action('/products/detail',42) };
-                tcol { 'action is chained' };
-            };
-        };
+        make_block($_)
+            for (@uri_list);
     };
 }
-
-# with { href => c->uri_for(c->controller->action_for('register')) }
-# with { href => c->uri_for(c->action('register')) }
-
