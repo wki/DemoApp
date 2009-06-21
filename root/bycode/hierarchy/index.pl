@@ -7,11 +7,11 @@ sub hierarchy_level {
     return if (!$hierarchy || ref($hierarchy) ne 'ARRAY' || !scalar(@{$hierarchy}));
     
     my %expanded = map {($_ => 1)} (1);
-    my $level = $hierarchy->[0]->get_column('level');
+    my $level = $hierarchy->[0]->level;
     ul {
         while (@{$hierarchy}) {
             my $h = $hierarchy->[0];
-            if ($h->get_column('level') == $level) {
+            if ($h->level == $level) {
                 # same level -> simply draw
                 with {class => 'dropzone'} li { ' ' };
                 li {

@@ -37,6 +37,11 @@ __PACKAGE__->add_unique_constraint("hierarchy_pkey", ["id"]);
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SqipHmPXsqhC3f24x1Bk8A
 
 #
+# accessor for level column
+#
+sub level { $_[0]->get_column('level') };
+
+#
 # modify the resulting SELECT statement
 #
 __PACKAGE__->resultset_attributes({
