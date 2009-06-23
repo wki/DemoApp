@@ -39,11 +39,12 @@ II - Catalyst
 -------------
 
   Architektur-Ideen / Best Practices
-   0) nie Root-Controller nutzen
+   0) nie Root-Controller nutzen, außer:
       * index() außer natürlich bei Startseite
       * default() Fehler-Seiten z.B. 404
       * auto() kann hilfreich sein zum Setzen globaler Dinge
         z.B. stash-Variablen zum Rendern des Layouts
+      * end :ActionClass('RenderView') {}
    1) pro Aufgabengebiet ein Controller
       * z.B. Haupt-Navigations-Punkte / Grundfunktionen
       * bei höherer Komplexität mehrere
@@ -147,7 +148,7 @@ II - Catalyst
           XXX_APP_DEBUG  || CATALYST_DEBUG
           XXX_APP_STATS  || CATALYST_STATS
       * xxx_app.conf -> hohe Prio
-        --> als override für test-deploys
+        --> als override für (test-)deploys
         Top-Level-keys :: application
         Spezielle Keys (session, authentication) für gewisse Plugins
         'Controller::Xxx', 'View::Xxx', 'Model::Xxx' -> ...
