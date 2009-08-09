@@ -5,15 +5,17 @@ with 'HTML::FormHandler::Render::Simple';
 
 has_field 'user_name' => (
     is => 'rw',
+    fif_from_value => 1,
     required => 1,
 );
 has_field 'password' => (
     is => 'rw',
 );
 
-has_field 'birthday' => (
+has_field 'birthdate' => (
     is => 'rw',
-    type => 'DateTime',
+    type => 'Compound',
+    # type => 'DateTime',
 );
 
 has_field 'birthdate.day' => (

@@ -30,7 +30,16 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    #$self->form->process(params => {xuser_name => 'xxx', password => 'abcd'});
+    # # works but validates:
+    # $self->form->process(params => {xuser_name => 'xxx', password => 'abcd'});
+    
+    # # works if field->fif_from_value is set
+    # $self->form->field('user_name')->value('bla "fasel"');
+    
+    # works but needs process
+    $self->form->params({user_name => 'blaaa'});
+    $self->form->process;
+    
     $c->stash->{form} = $self->form;
 }
 
