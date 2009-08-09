@@ -1,5 +1,5 @@
 sub RUN {
     div {'formhandler'};
     
-    print RAW stash->{form}->render();
+    stash->{form}->render();
 }

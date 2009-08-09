@@ -1,7 +1,8 @@
 package DemoApp::Form::Simple;
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
-with 'HTML::FormHandler::Render::Simple';
+#with 'HTML::FormHandler::Render::Simple';
+with 'Catalyst::View::ByCode::FormHandlerRenderer';
 
 has_field 'user_name' => (
     is => 'rw',

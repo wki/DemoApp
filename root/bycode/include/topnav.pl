@@ -53,12 +53,13 @@ sub RUN {
     }
     my ($active_item) = sort { $b->{count} <=> $a->{count} } @nav;
     $active_item ||= $nav[0];
-    with {id => 'topnav'} ul {
+    ul topnav {
         foreach my $navitem (@nav) {
             li {
                 class 'active' if ($navitem == $active_item);
-                with {href => c->uri_for(c->controller($navitem->{c})->action_for($navitem->{a}))}
-                    a { $navitem->{display} };
+                a(href => c->uri_for(c->controller($navitem->{c})->action_for($navitem->{a}))) { 
+                    $navitem->{display} 
+                };
             };
         }
     };
