@@ -7,6 +7,8 @@ use parent qw(Catalyst::Controller::HTML::FormFu
               DemoApp::AjaxController
               );
 
+use DemoApp::Form::Product;
+
 =head1 NAME
 
 DemoApp::Controller::Products - Catalyst Controller
@@ -159,6 +161,20 @@ sub uritest :Local {
     my $c = shift;
     
     # nothing inside, just let the template do its work.
+}
+
+=head2 formtest
+
+a simple HTML::FormHandler thing
+
+=cut
+
+sub formtest :Local {
+    my ($self, $c) = @_;
+    
+    my $form = DemoApp::Form::Product->new();
+    # $form->name('bla');
+    $c->stash->{form} = $form;
 }
 
 =head1 AUTHOR

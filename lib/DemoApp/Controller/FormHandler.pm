@@ -37,7 +37,7 @@ sub index :Path :Args(0) {
     # $self->form->field('user_name')->value('bla "fasel"');
     
     # works but needs process
-    $self->form->params({user_name => 'blaaa'});
+    $self->form->params({user_name => 'blaaa "fasel"'});
     $self->form->process;
     
     $c->stash->{form} = $self->form;
