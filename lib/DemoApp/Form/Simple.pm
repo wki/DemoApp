@@ -1,7 +1,6 @@
 package DemoApp::Form::Simple;
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
-#with 'HTML::FormHandler::Render::Simple';
 with 'Catalyst::View::ByCode::FormHandlerRenderer';
 
 has_field 'user_name' => (
@@ -15,8 +14,9 @@ has_field 'password' => (
 
 has_field 'birthdate' => (
     is => 'rw',
-    type => 'Compound',
-    # type => 'DateTime',
+    # type => 'Compound',
+    type => 'Adjoin',
+    label => 'Birthday',
 );
 
 has_field 'birthdate.day' => (
@@ -32,6 +32,11 @@ has_field 'birthdate.month' => (
 has_field 'birthdate.year' => (
     is => 'rw',
     type => 'Year',
+);
+
+has_field 'submit' => (
+    type => 'Submit',
+    value => 'Submit',
 );
 
 sub validate_user_name {

@@ -25,6 +25,11 @@ form div label {
     text-align: right;
 }
 
+form div input[type="submit"] {
+    margin-top: 20px;
+    margin-left: 200px;
+}
+
 form fieldset div label {
     width: 186px;
 }
