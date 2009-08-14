@@ -2,13 +2,13 @@
 # our universal wrapper
 # building the scaffolding for all pages
 #
-sub RUN {
+template {
     doctype 'xhtml';
     html {
         head {
             title { stash->{title} || 'untitled' };
-            load Js  => 'site.js';
-            load Css => 'site.css';
+            # load Js  => 'site.js';
+            # load Css => 'site.css';
             # load Js => 'dragdrop'; # will append to load Js above...
         };
         body {
@@ -20,4 +20,4 @@ sub RUN {
             div footer { yield 'footer'; };
         };
     };
-}
+};

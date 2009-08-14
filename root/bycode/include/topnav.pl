@@ -41,7 +41,7 @@ my @nav = (
     },
 );
 
-sub RUN {
+template {
     # find the active nav item
     foreach my $navitem (@nav) {
         $navitem->{co} = ref(c->controller);
@@ -63,6 +63,4 @@ sub RUN {
             };
         }
     };
-}
-# use YAML;
-# pre { Dump(\@nav) };
+};

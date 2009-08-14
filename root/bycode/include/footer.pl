@@ -3,7 +3,7 @@
 #  - copyright notice
 #  - catalyst logo
 #
-sub RUN {
+template {
     div {
         a(href => 'http://www.catalystframework.org/',
           target => '_blank') {
@@ -14,4 +14,4 @@ sub RUN {
         };
         div.copyright { "Copyright \x{00a9} 2009 WK"; };
     }
-}
+};
