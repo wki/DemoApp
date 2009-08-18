@@ -125,7 +125,7 @@ around uri_for => sub {
         #   believe me, it can do it!
         #
         return $c->component($path->class)->uri_for($c, $path, @args);
-    } elsif (!ref($path) && $path =~ m{\A ([A-Z]\w*)? :: (\w+) \z}xms) {
+    } elsif (!ref($path) && $path && $path =~ m{\A ([A-Z]\w*)? :: (\w+) \z}xms) {
         #
         # looks like 'Controller::action' or '::action'
         #

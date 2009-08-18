@@ -7,9 +7,8 @@ template {
     html {
         head {
             title { stash->{title} || 'untitled' };
-            # load Js  => 'site.js';
-            # load Css => 'site.css';
-            # load Js => 'dragdrop'; # will append to load Js above...
+            load Js  => 'site.js';
+            load Css => 'site.css';
         };
         body {
             div header { yield 'header'; };

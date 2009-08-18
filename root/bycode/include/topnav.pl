@@ -51,7 +51,7 @@ template {
             $navitem->{count}++ if (c->action eq c->controller->action_for($navitem->{a}));
         }
     }
-    my ($active_item) = sort { $b->{count} <=> $a->{count} } @nav;
+    my ($active_item) = sort { ($b->{count} || 0) <=> ($a->{count} || 0)} @nav;
     $active_item ||= $nav[0];
     ul topnav {
         foreach my $navitem (@nav) {
