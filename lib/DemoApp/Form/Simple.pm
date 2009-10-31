@@ -1,6 +1,6 @@
 package DemoApp::Form::Simple;
 use HTML::FormHandler::Moose;
-extends 'HTML::FormHandler';
+extends 'HTML::FormHandler'; # OR: 'HTML::FormHandler::Model::DBIC';
 with 'Catalyst::View::ByCode::FormHandlerRenderer';
 
 has_field 'user_name' => (
@@ -37,9 +37,14 @@ has_field 'birthdate.year' => (
 has_field 'submit' => (
     type => 'Submit',
     value => 'Submit',
+    fif_from_value => 1,
 );
 
 sub validate_user_name {
-
+    my ($self, $field) = @_;
+    
+    $field->add_error('must be filled with letters.')
+        if ($field->value !~ m{\w}xms)
 }
+
 1;

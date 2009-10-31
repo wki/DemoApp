@@ -14,5 +14,8 @@ block show_info {
 
 template {
     h1 { 'home page' };
+    #unknown_sub()
+    #my $z = 5 - 5;
+    #my $x = 1 / $z;
     show_info test.x123(abc => 42) { 'bla' };
 };

@@ -33,12 +33,15 @@ sub index :Path :Args(0) {
     # # works but validates:
     # $self->form->process(params => {xuser_name => 'xxx', password => 'abcd'});
     
+    my $status = $self->form->process(params => $c->req->parameters);
+    $c->log->debug("FORM PROCESS STATUS: $status");
+    
     # # works if field->fif_from_value is set
     # $self->form->field('user_name')->value('bla "fasel"');
     
     # works but needs process
-    $self->form->params({user_name => 'blaaa "fasel"'});
-    $self->form->process;
+    #$self->form->params({user_name => 'blaaa "fasel"'});
+    # $self->form->process;
     
     $c->stash->{form} = $self->form;
 }
