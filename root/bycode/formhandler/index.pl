@@ -1,3 +1,3 @@
 sub RUN {
-    stash->{form}->render();
+    div { stash->{form} };
 }
