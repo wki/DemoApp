@@ -374,6 +374,43 @@ Util.Hierarchy = Class.create({
 });
 
 //
+// image browser
+//
+Util.ImageField = Class.create({
+    initialize: function(e, parts) {
+        this._field = $(e);
+        this._path = parts.join('/');
+        console.log('new ImageField: ' + e + ', path=' + this._path);
+        
+        this._container = new Element('div', {style: 'position: absolute; display: inline; left: auto; top: auto; width: 1px; height: 1px;'});
+        this._button = new Element('button').insert('...');
+        
+        this._button.observe('click', this.onButtonClick.bindAsEventListener(this));
+        this._container.observe('click', this.onContainerClick.bindAsEventListener(this));
+        e.insert({after: this._button});
+        e.insert({after: this._container});
+    },
+    
+    onButtonClick: function(e) {
+        e.stop();
+        console.log('button clicked...');
+        
+        // TODO: open popup, fill with ajax request, show directory, allow upload...
+        new Ajax.Updater(this._container, 
+                         '/products/ajax/choose_image/' + this._path,
+                         {});
+    },
+    
+    onContainerClick: function(e) {
+        e.stop(); // maybe this is wrong some day...
+        var target = e.target;
+        
+        // currently -- empty the container...
+        this._container.innerHTML = '';
+    }
+});
+
+//
 // initiate Utils
 //
 Traverser.add('update',    Util.FormUpdater);
@@ -381,6 +418,7 @@ Traverser.add('enhance',   Util.FormEnhancer);
 Traverser.add('focus',     Util.FieldFocus);
 Traverser.add('sortable',  Util.TableSort);
 Traverser.add('hierarchy', Util.Hierarchy);
+Traverser.add('image',     Util.ImageField);
 
 document.observe('dom:loaded', function() {
     Traverser.prepareDOM(document);

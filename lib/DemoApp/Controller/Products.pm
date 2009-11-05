@@ -81,12 +81,12 @@ a simple editor for a product
 
 =cut
 
-sub edit :Local :Args(1) { #:FormConfig {
+sub edit :Local :Args(1) :FormConfig {
     my $self = shift;
     my $c  = shift;
     my $id = shift;
     
-    # my $form = $c->stash->{form};
+    my $form = $c->stash->{form};
     my $rs = $c->model('DB::Product')->search({},{prefetch => [qw(color sizes)]});
     my $form_structure = $rs->generate_form_fu({
         indicator => 'Save', 
@@ -94,8 +94,8 @@ sub edit :Local :Args(1) { #:FormConfig {
         auto_constraint_class => 'constraint_%t',
         attributes => {class => '_enhance'},
     });
-    my $form = $self->form($form_structure);
-    $c->stash->{form} = $form;
+    # my $form = $self->form($form_structure);
+    # $c->stash->{form} = $form;
     $c->stash->{product} = $c->model('DB::Product')->find($id);
     
     if ($form->submitted_and_valid) {
@@ -133,6 +133,12 @@ sub autocompleter :Chained('ajax') :Args(0) {
     my $c = shift;
         
     # default template: products/autocompleter.pl
+}
+
+sub choose_image :Chained('ajax') :Args() {
+    my ($self, $c, @parts) = @_;
+    
+    $c->log->debug("choose image, parts = @parts");
 }
 
 =head2 detail

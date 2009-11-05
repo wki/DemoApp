@@ -20,25 +20,20 @@ sub RUN {
                     li {$size->name};
                 }
             };
-            with { 
-                action => c->uri_for(c->controller->action_for('detail'), $product->id),
-                class => '_update_detail'
-            } form {
-                with {
-                    type => 'submit',
-                    name => 'Ajax',
-                    value => 'Ajax',
-                } input;
+            form (action => c->uri_for(c->controller->action_for('detail'), $product->id),
+                  class => '_update_detail') {
+                input (type => 'submit',
+                       name => 'Ajax',
+                       value => 'Ajax') ;
             };
             div {
-                with { href => c->uri_for(c->controller->action_for('show'), $product->id) }
-                a { 'detail...' };
+                a (href => c->uri_for(c->controller->action_for('show'), $product->id)) { 'detail...' };
             };
             br;
         };
     }
     
-    with {id => 'detail' } div { 'detail will follow...'};
+    div detail { 'detail will follow...'};
     
     pre {
         my $rs = c->model('DB::Product')->search({},{prefetch=>['color','sizes']});
@@ -56,9 +51,4 @@ sub RUN {
         Data::Dumper->Dump([$rs],['rs']) .
         Data::Dumper->Dump([$form],['form']);
     };
-    
-
-    #div {
-    #    pre { Data::Dumper->Dump([c->dispatcher->_dispatch_types],['dispatch_types']); }
-    #};
 }

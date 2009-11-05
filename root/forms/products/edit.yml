@@ -31,6 +31,15 @@ elements:
     filters:
       - TrimEdges
 
+  # Testing only -- image upload stuff
+  - type: Text
+    name: image
+    label: Image
+    attributes:
+      class: _image_root_static
+    filters:
+      - TrimEdges
+
   - type: Text
     name: price
     label: Price

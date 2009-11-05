@@ -42,11 +42,17 @@ has_field 'birthdate.year' => (
     widget_wrapper => 'None', # raw fields only
 );
 
+has_field 'file_name' => (
+    is => 'rw',
+    label => 'File Name',
+);
+
 has_field 'submit' => (
     type => 'Submit',
     value => 'Submit',
     fif_from_value => 1,
 );
+
 
 sub validate_user_name {
     my ($self, $field) = @_;

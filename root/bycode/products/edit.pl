@@ -1,2 +1,3 @@
-
-print RAW c->stash->{form}->render;
+sub RUN {
+    print RAW stash->{form}->render;
+}
