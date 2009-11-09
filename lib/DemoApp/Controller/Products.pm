@@ -139,6 +139,33 @@ sub choose_image :Chained('ajax') :Args() {
     my ($self, $c, @parts) = @_;
     
     $c->log->debug("choose image, parts = @parts");
+    my $dir = $c->path_to(@parts);
+    $c->stash->{dirlist} = $self->_content_of($dir);
+}
+
+# helper: give content of a Path::Class::Dir object
+# returns: [ name, name, ... ]
+sub _content_of {
+    my $self = shift;
+    my $dir = shift;
+    my $prefix = shift || '';
+    
+    my @files;
+    foreach my $child ($dir->children) {
+        push @files, {
+            name => $prefix . ($child->is_dir ? $child->relative($child->parent) : $child->basename),
+            # children => [],
+        };
+        if ($child->is_dir) {
+            # a dir object -- must dive inside -- TODO
+            my $new_prefix = ($prefix ? "$prefix/" : '') . $files[-1]->{name};
+            $files[-1]->{children} = $self->_content_of($child, $new_prefix);
+        } else {
+            # a file object -- nothing to do
+        }
+    }
+    
+    return \@files;
 }
 
 =head2 detail
