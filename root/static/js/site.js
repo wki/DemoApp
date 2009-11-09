@@ -402,15 +402,17 @@ Util.ImageField = Class.create({
     },
     
     onContainerClick: function(e) {
-        e.stop(); // maybe this is wrong some day...
         var target = e.target;
         if (target.hasClassName('clickable')) {
             console.log('clickable was clicked.');
-            this._field.value = target.innerHTML;
+            this._field.value = Element.readAttribute(target,'value');
+            e.stop();
+            this._container.innerHTML = '';
+        } else if (target.hasClassName('close')) {
+            e.stop();
+            this._container.innerHTML = '';
         }
         
-        // currently -- empty the container...
-        this._container.innerHTML = '';
     }
 });
 

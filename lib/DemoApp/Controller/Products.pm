@@ -140,26 +140,38 @@ sub choose_image :Chained('ajax') :Args() {
     
     $c->log->debug("choose image, parts = @parts");
     my $dir = $c->path_to(@parts);
-    $c->stash->{dirlist} = $self->_content_of($dir);
+    $c->stash->{directories} = [];
+    $c->stash->{dirlist} = $self->_content_of($c, $dir);
+}
+
+sub upload :Chained('ajax') :Args() {
+    my ($self, $c, @parts) = @_;
+    
+    $c->log->debug("UPLOAD IMAGE");
 }
 
 # helper: give content of a Path::Class::Dir object
 # returns: [ name, name, ... ]
 sub _content_of {
     my $self = shift;
+    my $c = shift;
     my $dir = shift;
     my $prefix = shift || '';
     
+    push @{$c->stash->{directories}}, $prefix;
+    
     my @files;
     foreach my $child ($dir->children) {
+        my $name = $child->is_dir ? $child->relative($child->parent) : $child->basename;
         push @files, {
-            name => $prefix . ($child->is_dir ? $child->relative($child->parent) : $child->basename),
-            # children => [],
+            path => "$prefix$name",
+            name => $name,
+            # children => [], # filled below if needed
         };
         if ($child->is_dir) {
             # a dir object -- must dive inside -- TODO
-            my $new_prefix = ($prefix ? "$prefix/" : '') . $files[-1]->{name};
-            $files[-1]->{children} = $self->_content_of($child, $new_prefix);
+            my $new_prefix = ($prefix ? "$prefix/" : '') . $files[-1]->{path} . '/';
+            $files[-1]->{children} = $self->_content_of($c, $child, $new_prefix);
         } else {
             # a file object -- nothing to do
         }
