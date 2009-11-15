@@ -135,6 +135,7 @@ sub autocompleter :Chained('ajax') :Args(0) {
     # default template: products/autocompleter.pl
 }
 
+### FIXME: move me into a dedicated controller
 sub choose_image :Chained('ajax') :Args() {
     my ($self, $c, @parts) = @_;
     
@@ -144,10 +145,13 @@ sub choose_image :Chained('ajax') :Args() {
     $c->stash->{dirlist} = $self->_content_of($c, $dir);
 }
 
+### FIXME: move me into a dedicated controller
 sub upload :Chained('ajax') :Args() {
     my ($self, $c, @parts) = @_;
     
-    $c->log->debug("UPLOAD IMAGE");
+    my $upload = $c->request->upload('file');
+    $c->log->debug("UPLOAD IMAGE, upload='$upload'");
+    $c->log->debug("  file-size=${\$upload->size}, file-name=${\$upload->filename}") if ($upload);
 }
 
 # helper: give content of a Path::Class::Dir object

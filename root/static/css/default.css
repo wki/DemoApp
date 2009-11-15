@@ -155,6 +155,97 @@ span.inherited {
     color: #555555;
 }
 
+/* Image choose and upload dialog box */
+div.image_chooser {
+    position:         absolute;
+    top:              0px;
+    left:             0px;
+    width:            400px;
+    height:           360px;
+    /* overflow-y:       scroll; */
+    background-color: #ffffff;
+    border:           1px solid black;
+    padding:          0px;
+    z-index:          1000;
+}
+
+div.image_chooser .head {
+    background-color: #000000;
+    width: 386px; /* 400 - 7 - 7 */
+    color: #ffffff;
+    padding: 7px;
+}
+
+div.image_chooser .head .close {
+    float: right;
+    position: relative;
+    top: -3px;
+    border: 2px outset #cccccc;
+    padding: 1px 4px;
+    color: #ffffff;
+    background-color: #555555;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+div.image_chooser .file_list {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 260px;
+    overflow-y: scroll;
+}
+
+div.image_chooser form label {
+    width: 80px;
+}
+
+div.image_chooser form div input[type="submit"] {
+    margin-top: 0px;
+    margin-left: 90px;
+}
+
+div.image_chooser .file_list ul {
+    margin: 0px 0px 0px 20px;
+    padding: 0px 0px 0px 0px;
+}
+
+div.image_chooser .file_list ul li {
+    position: relative;
+    clear: both;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+div.image_chooser .file_list ul li.expandable:before {
+    content: "▶";
+    color: #aaaaaa;
+    position: absolute;
+    top: 0px;
+    left: -13px;
+}
+
+div.image_chooser .file_list ul li.expanded:before {
+    content: "▼";
+}
+
+div.image_chooser .file_list ul li + ul {
+    margin-left: 20px;
+    display: none;
+}
+
+div.image_chooser .file_list ul li.expanded + ul {
+    display: block;
+}
+
+div.image_chooser .file_list ul li + ul li:before {
+    content: "";
+}
+
+
 /* indicate AJAX loading in progress */
 div.loading {
     position: absolute;

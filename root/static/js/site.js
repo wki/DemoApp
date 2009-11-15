@@ -399,15 +399,18 @@ Util.ImageField = Class.create({
         new Ajax.Updater(this._container, 
                          '/products/ajax/choose_image/' + this._path,
                          {});
+        // TODO: after loading find 'img._loader' image and hook form.submit() to displaying it
     },
     
     onContainerClick: function(e) {
-        var target = e.target;
+        var target =$(e.target);
         if (target.hasClassName('clickable')) {
             console.log('clickable was clicked.');
             this._field.value = Element.readAttribute(target,'value');
             e.stop();
             this._container.innerHTML = '';
+        } else if (target.hasClassName('expandable')) {
+            target.toggleClassName('expanded');
         } else if (target.hasClassName('close')) {
             e.stop();
             this._container.innerHTML = '';

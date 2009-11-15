@@ -9,11 +9,14 @@ block show_list {
             li { 
                 if (!exists($entry->{children})) {
                     class 'clickable';
+                } else {
+                    class 'expandable';
                 }
                 attr value => $entry->{path};
-                $entry->{name}; 
+                "$entry->{name}";
             };
             if (exists($entry->{children})) {
+                
                 show_list(files => $entry->{children});
             };
         }
@@ -22,28 +25,32 @@ block show_list {
 
 
 sub RUN {
-    div(style => {position => 'absolute', top => '0px', left => '0px', width => '300px', height => '260px', 'overflow-y' => 'scroll', 'background-color' => '#ffffff', border => '1px solid black', padding => '7px', 'z-index' => 1000}) {
-        div { 
-            span.close(style => {float => 'right'}) { 'X' };
-            'choose an image!' 
+    div.image_chooser {
+        div.head { 
+            span.close { 'X' };
+            'Bildauswahl' 
         };
         iframe(name => 'image_uploader', style => 'display: none;') {};
-        form(action => '/products/ajax/upload', target => 'image_uploader', enctype => 'multipart/form-data') {
-            label { 'directory: ' };
-            choice{
-                option(value => $_) {$_}
-                    for @{stash->{directories}};
+        form(action => '/products/ajax/upload', method => 'post', target => 'image_uploader', enctype => 'multipart/form-data') {
+            div {
+                label { 'Verzeichnis: ' };
+                choice{
+                    option(value => $_) {$_ || '(oberste Ebene)'}
+                        for @{stash->{directories}};
+                };
             };
-            br;
             
-            label { 'file: ' };
-            input(type => 'file', name => 'file');
-            br;
+            div {
+                label { 'Datei: ' };
+                input(type => 'file', name => 'file');
+            };
             
-            label { ' ' };
-            input(type => 'submit', name => 'Go', value => 'Go');
+            div {
+                input(type => 'submit', name => 'Hochladen', value => 'Hochladen');
+                img._loader(style => {display => 'none'}, src => '/static/images/ajax-loader.gif');
+            };
         };
-        div {
+        div.file_list {
             show_list(files => stash->{dirlist});
         };
     };
