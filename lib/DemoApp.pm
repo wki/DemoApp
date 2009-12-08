@@ -20,6 +20,8 @@ use Catalyst::Runtime '5.80';
 use Catalyst qw(ConfigLoader
                 Static::Simple
                 
+                I18N
+                
                 Authentication
                 Authorization::Roles
                 
@@ -74,6 +76,16 @@ __PACKAGE__->config(
         },
     },
 );
+
+sub prepare_path {
+    my $c = shift;
+    
+    $c->next::method(@_);
+    
+    my $lang = 'de_de';
+    $c->languages([$lang]);
+    return;
+}
 
 # Start the application
 __PACKAGE__->setup();
