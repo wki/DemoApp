@@ -15,5 +15,13 @@ sub build_language_handle {
     return $lh || $self->next::method();
 }
 
+around _make_field => sub {
+    my ($orig, $self, $field_attr) = @_;
+    $field_attr->{traits} ||= [];
+    push @{$field_attr->{traits}}, 'DemoApp::Form::Field::TraitForIdWithoutDots';
+    
+    $orig->($self, $field_attr);
+};
+
 use namespace::autoclean;
 1;

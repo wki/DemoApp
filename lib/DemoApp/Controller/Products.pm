@@ -223,7 +223,10 @@ sub formtest :Local {
     
     # my $form = DemoApp::Form::Product->new(language_handle => HTML::FormHandler::I18N->get_handle(@{$c->languages}));
     my $item = $c->model('DB::Product')->find(1);
-    my $form = DemoApp::Form::Product->new(ctx => $c, item => $item);
+    my $form = DemoApp::Form::Product->new(ctx => $c, 
+                                           item => $item, 
+                                           # field_traits => ['DemoApp::Form::Field::TraitForIdWithoutDots'],
+                                          );
     # $form->name('bla');
     $c->stash->{form} = $form;
     

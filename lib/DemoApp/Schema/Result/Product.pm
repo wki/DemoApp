@@ -63,26 +63,26 @@ __PACKAGE__->belongs_to("color", "DemoApp::Schema::Result::Color",
 #
 # add some things for easier HTML-FormFu form generation
 #
-__PACKAGE__->form_fu_extra(name => {
-    constraints => 'Required',
-    filters     => 'TrimEdges',
-});
-
-__PACKAGE__->form_fu_extra(nr => {
-    constraints => [
-        'Required',
-        {
-            type    => 'Regex',
-            regex   => '^[A-Z0-9]{4,8}$',
-            message => 'only A-Z, 0-9 allowed',
-        },
-    ],
-    filters     => 'TrimEdges',
-});
-
-__PACKAGE__->form_fu_extra(price => {
-    constraints => [qw(Required Number)],
-    filters     => 'TrimEdges',
-});
+# __PACKAGE__->form_fu_extra(name => {
+#     constraints => 'Required',
+#     filters     => 'TrimEdges',
+# });
+# 
+# __PACKAGE__->form_fu_extra(nr => {
+#     constraints => [
+#         'Required',
+#         {
+#             type    => 'Regex',
+#             regex   => '^[A-Z0-9]{4,8}$',
+#             message => 'only A-Z, 0-9 allowed',
+#         },
+#     ],
+#     filters     => 'TrimEdges',
+# });
+# 
+# __PACKAGE__->form_fu_extra(price => {
+#     constraints => [qw(Required Number)],
+#     filters     => 'TrimEdges',
+# });
 
 1;
