@@ -1,11 +1,15 @@
 package DemoApp::Controller::Products;
 
-use strict;
-use warnings;
-use parent qw(Catalyst::Controller::HTML::FormFu
-              DemoApp::RequireLoginController 
-              DemoApp::AjaxController
-              );
+# use strict;
+# use warnings;
+# use parent qw(Catalyst::Controller::HTML::FormFu
+#               DemoApp::RequireLoginController 
+#               DemoApp::AjaxController
+#               );
+
+use Moose;
+BEGIN {extends 'Catalyst::Controller'}
+with 'Catalyst::TraitFor::Controller::RequireLogin';
 
 use DemoApp::Form::Product;
 
@@ -20,6 +24,13 @@ Catalyst Controller.
 =head1 METHODS
 
 =cut
+
+sub auto :Private {
+    my ($self, $c) = @_;
+    
+    $c->log->debug('in ORIG AUTO');
+    return 1;
+}
 
 sub iframe_base :Chained :PathPart('iframe') :CaptureArgs(0) {
 }

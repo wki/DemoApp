@@ -73,6 +73,10 @@ __PACKAGE__->config(
             schema => 'DB',
         },
     },
+    
+    'TraitFor::Controller::RequireLogin' => {
+        bla => 'blubb',
+    },
 );
 
 # Start the application
