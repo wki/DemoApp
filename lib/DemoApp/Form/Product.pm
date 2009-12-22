@@ -4,12 +4,24 @@ extends 'HTML::FormHandler::Model::DBIC';
 with 'DemoApp::FormLanguage';
 
 use HTML::FormHandler::Types (':all');
-use HTML::FormHandler::Field (); ### needed to avoid error when trying to apply +field_traits
 
 has '+item_class'  => ( default =>'Product' );
 has '+name'        => ( default => 'product' );
 has '+html_prefix' => ( default => 1 );
+
+has '+widget_form' => ( default => 'Simple' );
+has '+widget_name_space' => (default => sub { [qw(DemoApp::Form::Widget)] });
+
+# has 'auto_fieldset' => (default => 0);
+
+# 
 # has '+field_traits'=> ( default => sub { ['DemoApp::Form::Field::TraitForIdWithoutDots'] } ); ### TODO!
+
+# sub render_start {}
+# sub render {}
+# before render => sub {
+#     warn "before render in Widget...";
+# };
 
 has_field name => ( 
     type => 'Text', 
@@ -17,8 +29,6 @@ has_field name => (
     required => 1, 
     css_class => 'constraint_required',
     apply => [Trim],
-    # works but must be repeated:
-    # traits => ['DemoApp::Form::Field::TraitForIdWithoutDots'],
 );
 
 has_field nr => ( 
@@ -40,19 +50,42 @@ has_field color => (
 
 has_field sizes => ( 
     type => 'Repeatable', 
-    # auto_id => 1,
+    # auto_id => 1, ### not needed -- fields in Field::Size.pm
+    num_when_empty => 3,
     is_compound => 0,
-    # contains => 'sizes.size',
 );
+
+# has_field 'sizes.id' => ( 
+#     type => 'Hidden', 
+# );
+# 
+# has_field 'sizes.product' => ( 
+#     type => 'Hidden', 
+# );
+# 
+# has_field 'sizes.code' => ( 
+#     type => 'Text', 
+#     size => 8, 
+#     widget_wrapper => 'None', # raw fields only
+# );
+# 
+# has_field 'sizes.name' => ( 
+#     type => 'Text', 
+#     size => 25, 
+#     required => 1, 
+#     widget_wrapper => 'None', # raw fields only
+# );
 
 has_field 'sizes.contains' => ( 
     type => '+DemoApp::Form::Field::Size', 
-    is_compound => 0, 
-    widget_wrapper => 'None', # raw fields only
+    #is_compound => 0, 
+    #widget_wrapper => 'None', # raw fields only
 );
 
 # testing only
 has_field 'created_at' => ( type => '+DemoApp::Form::Field::Date', );
+
+has_field 'updated_at' => (type => 'Date', widget => 'Datepicker');
 
 has_field 'submit' => ( type => 'Submit', value => 'Save', );
 

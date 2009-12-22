@@ -222,7 +222,8 @@ sub formtest :Local {
     my ($self, $c) = @_;
     
     # my $form = DemoApp::Form::Product->new(language_handle => HTML::FormHandler::I18N->get_handle(@{$c->languages}));
-    my $item = $c->model('DB::Product')->find(1);
+    # my $item = $c->model('DB::Product')->find(1);
+    my $item = $c->model('DB::Product')->new_result({});
     my $form = DemoApp::Form::Product->new(ctx => $c, 
                                            item => $item, 
                                            # field_traits => ['DemoApp::Form::Field::TraitForIdWithoutDots'],
@@ -232,7 +233,11 @@ sub formtest :Local {
     
     # $c->log->debug('language-handle: ' . ref($form->language_handle));
     my $status = $form->process(params => $c->req->parameters, schema => $c->model('DB')->schema);
+    
     $c->log->debug("Form Process Status: $status");
+    if ($status) {
+        $c->res->redirect($c->uri_for($self->action_for('formtest')));
+    }
 }
 
 =head1 AUTHOR

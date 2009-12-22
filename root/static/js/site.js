@@ -1,5 +1,5 @@
 /*
-default.js
+site.js
 
 standard utilities to control the entire site
 */

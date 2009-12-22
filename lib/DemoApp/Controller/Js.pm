@@ -5,7 +5,7 @@ use warnings;
 use parent 'Catalyst::Controller::Combine';
 
 # uncomment if desired
-use JavaScript::Minifier::XS qw(minify);
+# use JavaScript::Minifier::XS qw(minify);
 
 __PACKAGE__->config(
     #   optional, defaults to static/<<action_namespace>>
@@ -16,13 +16,20 @@ __PACKAGE__->config(
     #
     #   specify dependencies (without file extensions)
     depend => {
-        scriptaculous => 'prototype',
-        tablekit      => 'prototype',
-        builder       => 'scriptaculous',
-        effects       => 'scriptaculous',
-        dragdrop      => 'effects',
-        slider        => 'scriptaculous',
-        site          => ['dragdrop', 'tablekit', 'widgets'],
+        # prototype dependency chain
+        scriptaculous         => 'prototype',
+        tablekit              => 'prototype',
+        builder               => 'scriptaculous',
+        effects               => 'scriptaculous',
+        dragdrop              => 'effects',
+        slider                => 'scriptaculous',
+        site                  => ['dragdrop', 'tablekit', 'widgets'],
+        
+        # jquery dependency chain
+        'jquery.metadata'     => 'jquery-1.4',
+        'jquery.form-2.36'    => 'jquery-1.4',
+        'jquery.validate-1.6' => [qw(jquery.form-2.36 jquery.metadata)],
+        default               => [qw(jquery.validate-1.6 jquery-ui-1.7.2)],
     },
     #   will be guessed from extension
     # mimetype => 'application/javascript',

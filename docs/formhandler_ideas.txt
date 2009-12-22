@@ -1,0 +1,15 @@
+Things HTML::FormHandler should do
+----------------------------------
+
+1) use a JavaScript Framework Prototype / jQuery
+   +jQuery: form validator there
+
+2) Splitting a form into different parts (Tab / Accordion)
+
+3) new types/widgets
+   Date -> Datepicker
+   DateRange -> DatePicker + DatePicker
+   Int -> Slider
+   IntRange -> Slider
+   
+   
