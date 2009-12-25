@@ -20,7 +20,14 @@ __PACKAGE__->config(
         form       => 'default',
         table      => 'default',
         site       => [qw(form table navigation jquery-ui)],
-    },    #
+    },
+    
+    replace => {
+                       # change jQuery-UI's links to images
+        'jquery-ui' => [ qr'url\(images/' => 'url(/static/images/' ],
+    },
+    
+    #
     #   will be guessed from extension
     # mimetype => 'text/css',
     #

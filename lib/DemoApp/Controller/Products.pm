@@ -9,7 +9,7 @@ package DemoApp::Controller::Products;
 
 use Moose;
 BEGIN {extends 'Catalyst::Controller'}
-with 'Catalyst::TraitFor::Controller::RequireLogin';
+# with 'Catalyst::TraitFor::Controller::RequireLogin';
 
 use DemoApp::Form::Product;
 

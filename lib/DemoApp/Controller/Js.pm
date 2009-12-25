@@ -5,7 +5,7 @@ use warnings;
 use parent 'Catalyst::Controller::Combine';
 
 # uncomment if desired
-# use JavaScript::Minifier::XS qw(minify);
+use JavaScript::Minifier::XS qw(minify);
 
 __PACKAGE__->config(
     #   optional, defaults to static/<<action_namespace>>
