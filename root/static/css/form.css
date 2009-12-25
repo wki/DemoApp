@@ -12,6 +12,19 @@ fieldset {
 form div {
 }
 
+form div.form_line {
+    clear: both;
+}
+
+form div.form_line:after { /* stolen from clearfix */
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
 form div.error {
     background-color: #ff9999;
 }

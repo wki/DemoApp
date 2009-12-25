@@ -19,7 +19,7 @@ __PACKAGE__->config(
         navigation => 'default',
         form       => 'default',
         table      => 'default',
-        site       => ['form', 'table', 'navigation'],
+        site       => [qw(form table navigation jquery-ui)],
     },    #
     #   will be guessed from extension
     # mimetype => 'text/css',

@@ -1,7 +1,7 @@
 use Data::Dumper;
 
 sub RUN {
-    with { class => 'list sortable _sortable' } table {
+    table.list.sortable._sortable {
         thead{
             trow {
                 foreach my $colname (qw(id name login email)) {

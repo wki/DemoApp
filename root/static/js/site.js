@@ -1,5 +1,5 @@
 /*
-default.js
+site.js
 
 standard utilities to control the entire site
 */
@@ -331,7 +331,7 @@ Util.FormUpdater = Class.create({
                          this._form.readAttribute('action'),
                          {
                              evalScripts: true,
-                             parameters: this._form.serialize(),
+                             parameters: this._form.serialize()
                              // onComplete: ... something maybe...
                          });
         e.stop();

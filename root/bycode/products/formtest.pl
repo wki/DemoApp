@@ -1,3 +1,3 @@
 sub RUN {
-    print RAW stash->{form}->render;
+    div { stash->{form} };
 }
