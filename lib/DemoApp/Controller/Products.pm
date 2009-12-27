@@ -8,8 +8,9 @@ package DemoApp::Controller::Products;
 #               );
 
 use Moose;
-BEGIN {extends 'Catalyst::Controller'}
+BEGIN {extends 'Catalyst::Controller::HTML::FormFu'} # or  'Catalyst::Controller' ???
 # with 'Catalyst::TraitFor::Controller::RequireLogin';
+with 'Catalyst::TraitFor::Controller::Ajax';
 
 use DemoApp::Form::Product;
 
@@ -25,10 +26,16 @@ Catalyst Controller.
 
 =cut
 
+sub begin :Private {
+    my ($self, $c) = @_;
+    
+    $c->log->debug('CONTROLLERs begin()');
+}
+
 sub auto :Private {
     my ($self, $c) = @_;
     
-    $c->log->debug('in ORIG AUTO');
+    $c->log->debug('in ORIG AUTO, is_ajax = ' . $c->stash->{is_ajax_request});
     return 1;
 }
 
@@ -233,17 +240,17 @@ sub formtest :Local {
     my ($self, $c) = @_;
     
     # my $form = DemoApp::Form::Product->new(language_handle => HTML::FormHandler::I18N->get_handle(@{$c->languages}));
-    # my $item = $c->model('DB::Product')->find(1);
-    my $item = $c->model('DB::Product')->new_result({});
+    my $item = $c->model('DB::Product')->find(1);
+    # my $item = $c->model('DB::Product')->new_result({});
     my $form = DemoApp::Form::Product->new(ctx => $c, 
-                                           item => $item, 
+                                           #item => $item, 
                                            # field_traits => ['DemoApp::Form::Field::TraitForIdWithoutDots'],
                                           );
     # $form->name('bla');
     $c->stash->{form} = $form;
     
     # $c->log->debug('language-handle: ' . ref($form->language_handle));
-    my $status = $form->process(params => $c->req->parameters, schema => $c->model('DB')->schema);
+    my $status = $form->process(params => $c->req->parameters, item => $item); #, schema => $c->model('DB')->schema);
     
     $c->log->debug("Form Process Status: $status");
     if ($status) {
